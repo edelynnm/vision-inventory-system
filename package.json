@@ -1,0 +1,35 @@
+{
+  "name": "vision",
+  "version": "1.0.0",
+  "description": "Contents\r - diagrams",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node-dev --respawn src/index.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edelynnm/vision-inventory-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/edelynnm/vision-inventory-system/issues"
+  },
+  "homepage": "https://github.com/edelynnm/vision-inventory-system#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "dbmate": "^1.0.0",
+    "express": "^4.17.1",
+    "pg": "^8.5.1",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.14.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "node-dev": "^6.2.0"
+  }
+}
