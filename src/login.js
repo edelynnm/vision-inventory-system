@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export default (pgClient, req, res) => {
   const { username, password } = req.body;
@@ -9,11 +10,19 @@ export default (pgClient, req, res) => {
       console.log(queryError);
       res.status(500).json({ queryError });
     } else {
-      bcrypt.compare(password, rows[0].password, (_compareErr, result) => {
+      bcrypt.compare(password, rows[0].password, (compareErr, result) => {
         Reflect.deleteProperty(rows[0], "password"); // deletes object property (JS delete operator)
-        res
-          .status(result ? 200 : 401)
-          .json({ success: result, user: result ? rows[0] : null });
+        if (compareErr || !result) {
+          res
+            .status(401)
+            .json({ success: false, user: null });
+        } else {
+          jwt.sign(rows[0], process.env.JWT_SECRET, { algorithm: "HS256", expiresIn: "2h" }, (jwtError, token) => {
+            res
+              .status(200)
+              .json({ success: true, token });
+          });
+        }
       });
     }
   });
