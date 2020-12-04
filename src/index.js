@@ -1,8 +1,9 @@
 import express from "express";
 import bodyParser from "body-parser";
 import pool from "./db.js";
-import signUp from "./signUp.js";
-import login from "./login.js";
+import signUp from "./Auth/signUp.js";
+import login from "./Auth/login.js";
+import verifyEmail from "./Auth/verifyEmail.js";
 
 const app = express();
 
@@ -20,13 +21,18 @@ pool.connect((error, pgClient) => {
   // AUTHENTICATION
   // business owner login
 
-    .post("/login", (req, res) => {
+    .post("/api/login", (req, res) => {
       login(pgClient, req, res);
     })
 
-  // business owner sign up
-    .post("/signUp", (req, res) => {
+    // business owner sign up
+    .post("/api/signUp", (req, res) => {
       signUp(pgClient, res, req);
+    })
+
+    // verify signUp
+    .get("/api/signUp/verifyEmail", (req, res) => {
+      verifyEmail(pgClient, req, res);
     })
 
     .listen(8000, () => {
