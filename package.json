@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node-dev --respawn src/index.mjs",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js" 
+    "start": "nodemon src/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "nodemailer": "^6.4.16",
     "pg": "^8.5.1"
   },
   "devDependencies": {
@@ -34,6 +35,6 @@
     "eslint-plugin-import": "^2.22.1",
     "jest": "^26.6.3",
     "jest-environment-node": "^26.6.2",
-    "node-dev": "^6.2.0"
+    "nodemon": "^2.0.6"
   }
 }
