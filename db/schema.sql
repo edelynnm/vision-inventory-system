@@ -223,7 +223,8 @@ CREATE TABLE public.users (
     fname text NOT NULL,
     lname text NOT NULL,
     email text NOT NULL,
-    is_verified boolean DEFAULT false NOT NULL
+    is_verified boolean DEFAULT false NOT NULL,
+    verification_token text NOT NULL
 );
 
 
@@ -506,4 +507,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20201129113553'),
     ('20201129113629'),
     ('20201129113953'),
-    ('20201129114420');
+    ('20201129114420'),
+    ('20201203082517');
