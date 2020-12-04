@@ -8,7 +8,7 @@ export default (pgClient, req, res) => {
   pgClient.query(sql, [username], (queryError, { rows }) => {
     if (queryError) {
       console.log(queryError);
-      res.status(500).json({ queryError });
+      res.status(500);
     } else {
       bcrypt.compare(password, rows[0].password, (compareErr, result) => {
         Reflect.deleteProperty(rows[0], "password"); // deletes object property (JS delete operator)
