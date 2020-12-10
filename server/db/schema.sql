@@ -19,8 +19,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.businesses (
     business_id integer NOT NULL,
-    business_name text NOT NULL,
-    business_code text NOT NULL
+    business_name text NOT NULL
 );
 
 
@@ -218,7 +217,6 @@ CREATE TABLE public.users (
     user_id integer NOT NULL,
     user_role_id integer NOT NULL,
     user_business_id integer,
-    username text NOT NULL,
     password text NOT NULL,
     fname text NOT NULL,
     lname text NOT NULL,
@@ -508,4 +506,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20201129113629'),
     ('20201129113953'),
     ('20201129114420'),
-    ('20201203082517');
+    ('20201203082517'),
+    ('20201204063903'),
+    ('20201204150447');
