@@ -1,14 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import pool from "./db.js";
-// import bcrypt from "bcrypt";
-// import url from "url";
-// import pool from "./db.js";
-// import signUp from "./Auth/signUp.js";
-// import login from "./Auth/login.js";
-// import verifyEmail from "./Auth/verifyEmail.js";
-// import registerEmployee from "./Auth/registerEmployee.js";
 import auth from "./Routes/auth.js";
+import dashboard from "./Routes/content.js";
 
 const app = express();
 const port = 8000;
@@ -25,6 +19,7 @@ app
   .use(bodyParser.urlencoded({ extended: true }))
   .use(express.static("public"))
   .use("/api/auth", auth)
+  .use("/api", dashboard)
   .listen(port, () => {
     console.log("Server has started: http://localhost:8000");
   });
