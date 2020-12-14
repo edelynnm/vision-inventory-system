@@ -5,6 +5,29 @@ import pgClient from "../db.js";
 const router = express.Router();
 
 router
+  // Display all products + search by product name - fetch at inventory page selection
+  .get("/inventory", authenticateToken, async (req, res) => {
+    try {
+      const { input } = req.body;
+      const query = {
+        text: `SELECT product_code,
+        CONCAT_WS(' ', product_brand, product_specs) AS product_desc,
+        product_qty, product_unit_price,
+        product_unit, reorder_point,
+        C.category_name
+        FROM products as P
+        INNER JOIN categories as C ON P.product_category_code = C.category_code
+        WHERE product_brand ILIKE $1 OR product_specs ILIKE $1
+        ORDER BY product_desc ASC;`,
+        values: [`%${input}%`],
+      };
+      const { rows } = await pgClient.query(query);
+      return res.json(rows);
+    } catch (error) {
+      console.log(error);
+      return res.sendStatus(500);
+    }
+  })
   // New item
   .post("/inventory/add-new-product", authenticateToken, async (req, res) => {
     try {
