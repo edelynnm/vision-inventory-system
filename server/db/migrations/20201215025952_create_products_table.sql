@@ -6,6 +6,7 @@ CREATE TABLE products (
   product_specs text NOT NULL,
   product_qty int CHECK(product_qty >= 0) NOT NULL,
   product_unit_price money NOT NULL,
+  product_unit text NOT NULL DEFAULT 'UNIT',
   reorder_point int NOT NULL DEFAULT 0
 );
 
