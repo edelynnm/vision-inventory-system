@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import pool from "./db.js";
 import auth from "./Routes/auth.js";
-import dashboard from "./Routes/content.js";
+import inventory from "./Routes/inventory.js";
 
 const app = express();
 const port = 8000;
@@ -19,7 +19,7 @@ app
   .use(bodyParser.urlencoded({ extended: true }))
   .use(express.static("public"))
   .use("/api/auth", auth)
-  .use("/api", dashboard)
+  .use("/api", inventory)
   .listen(port, () => {
     console.log("Server has started: http://localhost:8000");
   });
