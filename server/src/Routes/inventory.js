@@ -8,7 +8,7 @@ router
   // Display all products + search by product name - fetch at inventory page selection
   .get("/inventory", authenticateToken, async (req, res) => {
     try {
-      const { input } = req.body;
+      const { searchWord } = req.body;
       const query = {
         text: `SELECT product_code,
         CONCAT_WS(' ', product_brand, product_specs) AS product_desc,
@@ -19,9 +19,27 @@ router
         INNER JOIN categories as C ON P.product_category_code = C.category_code
         WHERE product_brand ILIKE $1 OR product_specs ILIKE $1
         ORDER BY product_desc ASC;`,
-        values: [`%${input}%`],
+        values: [`%${searchWord}%`],
       };
       const { rows } = await pgClient.query(query);
+      return res.json(rows);
+    } catch (error) {
+      console.log(error);
+      return res.sendStatus(500);
+    }
+  })
+  // display by category
+  .get("/inventory/by-category", authenticateToken, async (req, res) => {
+    try {
+      const { selectedCategory } = req.body;
+      const { rows } = await pgClient.query(`SELECT product_code,
+      CONCAT_WS(' ', product_brand, product_specs) AS product_desc,
+      product_qty, product_unit_price,
+      product_unit, reorder_point
+      --, C.category_name
+      FROM products AS P
+      INNER JOIN categories as C ON P.product_category_code = C.category_code
+      WHERE C.category_name ILIKE $1`, [selectedCategory]);
       return res.json(rows);
     } catch (error) {
       console.log(error);
@@ -79,14 +97,11 @@ router
           .status(401)
           .json({ message: "You don't have permission to visit this page." });
       }
-      const {
-        categoryName,
-        parentCategoryCode,
-      } = req.body;
+      const { categoryName } = req.body;
 
       const query = {
-        text: "INSERT INTO categories (category_name, parent_category_code) VALUES ($1, $2)",
-        values: [categoryName, parentCategoryCode],
+        text: "INSERT INTO categories (category_name) VALUES ($1)",
+        values: [categoryName],
       };
 
       await pgClient.query(query);
