@@ -7,12 +7,12 @@ import sendEmail from "../utils/sendEmail.js";
 import pgClient from "../db.js";
 import authenticateToken from "../utils/authenticakeToken.js";
 
-const verificationToken = crypto.randomBytes(64).toString("hex");
 dotenv.config();
 
 const router = express.Router();
 router.post("/signup", async (req, res) => {
   try {
+    const verificationToken = crypto.randomBytes(64).toString("hex");
     const {
       email, password, fname, lname, businessName,
     } = req.body;
@@ -74,7 +74,7 @@ router.patch("/signup/verify-email", async (req, res) => {
 
     const users = await pgClient.query("UPDATE users SET is_verified = true WHERE user_id = $1 RETURNING *", [rows[0].user_id]);
 
-    if (users.rows[0].user_role_id > 1) {
+    if (users.rows[0].user_id !== 1) {
       const user = users.rows[0];
       ["password", "verification_token"].forEach((prop) => delete user[prop]);
       const token = jwt.sign(user, process.env.JWT_SECRET, { algorithm: "HS256", expiresIn: "10m" });
@@ -101,7 +101,7 @@ router.post("/login", async (req, res) => {
       res.status(401).json({ success: false, message: "Incorrect email/password" });
     }
     Reflect.deleteProperty(rows[0], "password");
-    const token = jwt.sign(rows[0], process.env.JWT_SECRET, { algorithm: "HS256", expiresIn: "30m" });
+    const token = jwt.sign(rows[0], process.env.JWT_SECRET, { algorithm: "HS256" }); // EDIT BACK TO 30 mins
     return res.json({ success: true, token });
   } catch (error) {
     console.log(error);
@@ -109,41 +109,19 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/manage-employee/register", authenticateToken, async (req, res) => {
-  try {
-    const {
-      userRoleId,
-      email,
-      defaultPassword,
-      fname,
-      lname,
-    } = req.body;
-
-    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-    await pgClient.query("INSERT INTO users (user_business_id, user_role_id, email, password, fname, lname, verification_token) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-      [req.user.user_business_id, userRoleId, email, hashedPassword, fname, lname, verificationToken]);
-    const invMsg = `<p>Hello ${fname}!<br>You have been invited to VISION Inventory Management System by ${req.user.fname} ${req.user.lname}.<br><a href="http://localhost:8000/api/signup/verify-email?token=${verificationToken}"><br><input type="submit" value="Accept Invitation"/></a></p>`;
-    const subject = "Account Invitation for VISION Inventory";
-    sendEmail(invMsg, subject, email);
-    return res.json({ success: true, message: "Invitation sent successfully!" }); // initation also acts as verification for non-admin users
-  } catch (error) {
-    console.log(error);
-    return res.sendStatus(500);
-  }
-});
-
 router.patch("/signup/employee", authenticateToken, async (req, res) => {
-  // TO CONTINUE
   try {
     const { password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
     await pgClient.query("UPDATE users SET password = $1 WHERE user_id = $2", [hashedPassword, req.user.user_id]);
     return res.json({ success: true, message: "Password successfully changed." });
+    // TODO: invoke jwt token before exp
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
   }
 });
 
+// TODO: logout & 2 social logins
 export default router;
