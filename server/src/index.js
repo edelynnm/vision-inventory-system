@@ -3,6 +3,8 @@ import bodyParser from "body-parser";
 import pool from "./db.js";
 import auth from "./Routes/auth.js";
 import inventory from "./Routes/inventory.js";
+import employees from "./Routes/employees.js";
+import authenticakeToken from "./utils/authenticakeToken.js";
 
 const app = express();
 const port = 8000;
@@ -19,7 +21,10 @@ app
   .use(bodyParser.urlencoded({ extended: true }))
   .use(express.static("public"))
   .use("/api/auth", auth)
+  .use(authenticakeToken)
   .use("/api", inventory)
+  .use("/api", employees)
+
   .listen(port, () => {
     console.log("Server has started: http://localhost:8000");
   });
