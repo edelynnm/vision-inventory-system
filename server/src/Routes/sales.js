@@ -96,6 +96,21 @@ router
       console.log(error);
       return res.sendStatus(500);
     }
+  })
+  // if user wants to go to other pages while in this tab
+  .delete("/new-transaction/:id/add", async (req, res) => {
+    try {
+      const { isCancelled } = req.body;
+
+      if (isCancelled) {
+        await pgClient.query("DELETE FROM transaction_records WHERE transaction_id = $1;", [req.params.id]);
+      }
+
+      return res.sendStatus(200);
+    } catch (error) {
+      console.log(error);
+      return res.sendStatus(500);
+    }
   });
 
 export default router;
