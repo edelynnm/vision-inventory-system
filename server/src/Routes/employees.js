@@ -7,7 +7,7 @@ import pgClient from "../db.js";
 const router = express.Router();
 
 router
-  .post("/manage-employees/register", async (req, res) => {
+  .post("/register", async (req, res) => {
     try {
       if (req.user.user_role_id !== 1) return res.status(401).json({ message: "You don't have permission to visit this page." });
 
