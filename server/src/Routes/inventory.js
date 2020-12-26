@@ -1,25 +1,27 @@
 import express from "express";
-import authenticateToken from "../utils/authenticakeToken.js";
 import pgClient from "../db.js";
+import authenticateRole from "../utils/authenticateRole.js";
 
 const router = express.Router();
 
 router
-  // Display all products + search by product name - fetch at inventory page selection
-  .get("/inventory", authenticateToken, async (req, res) => {
+  // Display all items + search by item name - fetch at inventory page selection
+  .get("/", async (req, res) => {
     try {
-      const { searchWord } = req.body;
+      // const { searchWord } = req.body;
       const query = {
-        text: `SELECT product_code,
-        CONCAT_WS(' ', product_brand, product_specs) AS product_desc,
-        product_qty, product_unit_price,
-        product_unit, reorder_point,
+        text: // `SELECT * from items`
+        `SELECT item_code,
+        CONCAT_WS(' ', item_brand, item_specs) AS item_desc,
+        item_qty, item_unit_price,
+        item_unit, reorder_point,
         C.category_name
-        FROM products as P
-        INNER JOIN categories as C ON P.product_category_code = C.category_code
-        WHERE product_brand ILIKE $1 OR product_specs ILIKE $1
-        ORDER BY product_desc ASC;`,
-        values: [`%${searchWord}%`],
+        FROM items as I
+        INNER JOIN categories as C ON I.item_category_code = C.category_code
+        -- WHERE item_brand ILIKE $1 OR item_specs ILIKE $1
+        ORDER BY item_desc ASC;
+        `,
+        // values: [`%${searchWord}%`],
       };
       const { rows } = await pgClient.query(query);
       return res.json(rows);
@@ -29,16 +31,16 @@ router
     }
   })
   // display by category
-  .get("/inventory/by-category", authenticateToken, async (req, res) => {
+  .get("/by-category", async (req, res) => {
     try {
       const { selectedCategory } = req.body;
-      const { rows } = await pgClient.query(`SELECT product_code,
-      CONCAT_WS(' ', product_brand, product_specs) AS product_desc,
-      product_qty, product_unit_price,
-      product_unit, reorder_point
+      const { rows } = await pgClient.query(`SELECT item_code,
+      CONCAT_WS(' ', item_brand, item_specs) AS item_desc,
+      item_qty, item_unit_price,
+      item_unit, reorder_point
       --, C.category_name
-      FROM products AS P
-      INNER JOIN categories as C ON P.product_category_code = C.category_code
+      FROM items AS I
+      INNER JOIN categories as C ON I.item_category_code = C.category_code
       WHERE C.category_name ILIKE $1`, [selectedCategory]);
       return res.json(rows);
     } catch (error) {
@@ -47,42 +49,45 @@ router
     }
   })
   // New item
-  .post("/inventory/add-new-product", authenticateToken, async (req, res) => {
+  .use(authenticateRole([2, 3]))
+  .post("/new-item", async (req, res) => {
     try {
-      if ([2, 3].includes(req.user.user_role_id)) {
-        return res
-          .status(401)
-          .json({ message: "You don't have permission to visit this page." });
-      }
       const {
-        productCode,
-        productCategoryCode,
-        productBrand,
-        productSpecs,
-        productQty,
-        productUnitPrice,
-        productUnit,
+        itemCode,
+        itemCategoryCode,
+        itemBrand,
+        itemSpecs,
+        itemQty,
+        itemUnitPrice,
+        itemUnit,
         reorderPoint,
       } = req.body;
+
       const query = {
         text:
-          "INSERT INTO products (product_code, product_category_code, product_brand, product_specs, product_qty, product_unit_price, product_unit, reorder_point) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+          `INSERT INTO items 
+           (item_code, item_category_code, item_brand, item_specs, item_qty,
+           item_unit_price, item_unit, reorder_point)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
         values: [
-          productCode,
-          productCategoryCode,
-          productBrand,
-          productSpecs,
-          productQty,
-          productUnitPrice,
-          productUnit,
+          itemCode,
+          itemCategoryCode,
+          itemBrand,
+          itemSpecs,
+          itemQty,
+          itemUnitPrice,
+          itemUnit,
           reorderPoint,
         ],
       };
+      const { rows } = await pgClient.query("SELECT * FROM items WHERE item_code = $1", [itemCode]);
+
+      if (rows.length !== 0) return res.status(409).json({ success: false, message: "Item already exists." });
 
       await pgClient.query(query);
       return res.json({
         success: true,
-        message: "New product added to inventory",
+        message: "New item added to inventory",
       });
     } catch (error) {
       console.log(error);
@@ -90,14 +95,13 @@ router
     }
   })
   // New Category
-  .post("/inventory/add-new-category", authenticateToken, async (req, res) => {
+  .post("/new-category", async (req, res) => {
     try {
-      if ([2, 3].includes(req.user.user_role_id)) {
-        return res
-          .status(401)
-          .json({ message: "You don't have permission to visit this page." });
-      }
       const { categoryName } = req.body;
+
+      const { rows } = await pgClient.query("SELECT * FROM categories WHERE category_name ILIKE $1", [categoryName]);
+
+      if (rows.length !== 0) return res.status(409).json({ success: false, message: "Category already exists." });
 
       const query = {
         text: "INSERT INTO categories (category_name) VALUES ($1)",
