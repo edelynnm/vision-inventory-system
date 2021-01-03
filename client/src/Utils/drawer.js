@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import theme from "../Theme";
 import Routes from "./routes";
-import { Link, useLocation } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 
 const styles = (theme) => ({
   listItem: {
@@ -32,15 +32,14 @@ const styles = (theme) => ({
 
 const useStyle = makeStyles(styles);
 
-const CustomDrawer = () => {
-  const location = useLocation();
+const CustomDrawer = (props) => {
   const classes = useStyle(theme);
 
   return (
       <div>
         <List>
           {Routes.map((route) => {
-            const isSelected = location.pathname.includes(route.path) ? true : false
+            const isSelected = props.location.pathname.includes(route.path) ? true : false
             if (route.sidebarName === "Logout") return null;
             return (
             <ListItem
@@ -73,4 +72,4 @@ const CustomDrawer = () => {
   );
 };
 
-export default CustomDrawer;
+export default withRouter(CustomDrawer);
