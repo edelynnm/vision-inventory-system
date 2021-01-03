@@ -8,13 +8,11 @@ import {
   IconButton,
   Toolbar,
   Box,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { MenuRounded } from "@material-ui/icons"
 import theme from "../Theme/index";
 import CustomDrawer from "../Utils/drawer";
-
-const drawerWidth = 240;
 
 const styles = (theme) => ({
   main: {
@@ -41,7 +39,7 @@ const useStyle = makeStyles(styles);
 const PageTemplate = (props) => {
   const classes = useStyle(theme);
   const [mobileOpen, setMobileOpen] = useState(false);
-
+  
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -83,9 +81,9 @@ const PageTemplate = (props) => {
             keepMounted: true,
           }}
           >
-          <Toolbar />
-          <Divider />
-          <CustomDrawer/>
+            <Toolbar />
+            <Divider />
+            <CustomDrawer />
         </Drawer>
       </Hidden>
       <Box className={classes.main}>
