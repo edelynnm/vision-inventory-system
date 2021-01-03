@@ -1,9 +1,7 @@
-import React, { Fragment, useState } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  Drawer,
   Divider,
-  Box,
   List,
   ListItem,
   ListItemText,
@@ -11,40 +9,50 @@ import {
 } from "@material-ui/core";
 import theme from "../Theme";
 import Routes from "./routes";
+import { Link, useLocation } from "react-router-dom";
 
 const styles = (theme) => ({
-  toolbar: theme.mixins.toolbar,
-  active: {
-    color: "#0b2696",
+  listItem: {
+    color: "#7b8ba6",
+    "&:hover": {
+      backgroundColor: theme.palette.primary.light
+    },
   },
+  selected: {
+    color: theme.palette.primary.dark,
+    "&.Mui-selected:hover":{
+      backgroundColor: "#d9dee9"
+    },
+    "&.Mui-selected":{
+      color: theme.palette.primary.dark,
+      backgroundColor: "#e5ebf4"
+    }
+  }
 });
 
 const useStyle = makeStyles(styles);
 
-
 const CustomDrawer = () => {
+  const location = useLocation();
   const classes = useStyle(theme);
-  const [selectedIndex, setSelectedIndex] = useState();
-
-  const handleListItemClick = (event, index) => {
-    setSelectedIndex(index);
-  };
 
   return (
       <div>
         <List>
-          {Routes.map((route, index) => {
+          {Routes.map((route) => {
+            const isSelected = route.path === location.pathname ? true : false
+  
             if (route.sidebarName === "Logout") return null;
             return (
             <ListItem
               button
-              component="a"
+              component={Link}
               key={route.sidebarName}
-              href={route.path}
-              selected={index === selectedIndex}
-              onClick={(event) => handleListItemClick(event, index)}
+              to={route.path}
+              selected={isSelected}
+              className={isSelected ? classes.selected : classes.listItem}
             >
-              <ListItemIcon>{route.icon}</ListItemIcon>
+              <ListItemIcon className={isSelected ? classes.selected : classes.listItem}>{route.icon}</ListItemIcon>
               <ListItemText primary={route.sidebarName} />
             </ListItem>);
           })}
@@ -53,11 +61,12 @@ const CustomDrawer = () => {
         <List>
           <ListItem
             button
-            component="a"
+            component={Link}
             key="Logout"
-            href="/"
+            to="/"
+            className={classes.listItem}
           >
-            <ListItemIcon>{Routes[Routes.length-1].icon}</ListItemIcon>
+            <ListItemIcon className={classes.listItem}>{Routes[Routes.length-1].icon}</ListItemIcon>
             <ListItemText primary="Logout" />
           </ListItem>
         </List>
