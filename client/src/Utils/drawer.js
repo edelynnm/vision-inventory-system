@@ -40,8 +40,7 @@ const CustomDrawer = () => {
       <div>
         <List>
           {Routes.map((route) => {
-            const isSelected = route.path === location.pathname ? true : false
-  
+            const isSelected = location.pathname.includes(route.path) ? true : false
             if (route.sidebarName === "Logout") return null;
             return (
             <ListItem
