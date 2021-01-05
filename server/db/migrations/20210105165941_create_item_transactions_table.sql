@@ -1,7 +1,7 @@
 -- migrate:up
 CREATE TABLE item_transactions (
   transaction_id bigint REFERENCES transaction_records (transaction_id) NOT NULL, 
-  item_code int NOT NULL,
+  item_code bigint NOT NULL,
   qty int NOT NULL,
   total_price numeric NOT NULL
 );

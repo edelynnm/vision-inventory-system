@@ -1,6 +1,6 @@
 -- migrate:up
 CREATE TABLE items (
-  item_code int PRIMARY KEY NOT NULL,
+  item_code bigint PRIMARY KEY NOT NULL,
   item_brand text NOT NULL,
   item_specs text NOT NULL,
   item_qty int CHECK(item_qty >= 0) NOT NULL,
