@@ -6,7 +6,7 @@ import Sales from "../Components/sales";
 import Employees from "../Components/employees";
 import Reports from "../Components/reports"
 
-const Routes = [
+const MainRoutes = [
   {
     sidebarName: "Dashboard",
     icon: <DashboardRounded />,
@@ -26,12 +26,6 @@ const Routes = [
     component: Sales
   },
   {
-    sidebarName: "Purchase",
-    icon: <ShoppingCartRounded />,
-    path: "/purchase",
-    component: Purchase,
-  },
-  {
     sidebarName: "Reports",
     icon: <TrendingUpRounded />,
     path: "/reports",
@@ -41,7 +35,7 @@ const Routes = [
     sidebarName: "Employees",
     icon: <SupervisorAccountRounded />,
     path: "/employees",
-    component: Reports
+    component: Employees
   },
   {
     sidebarName: "Logout",
@@ -50,4 +44,4 @@ const Routes = [
   },
 ];
 
-export default Routes;
+export default MainRoutes;
