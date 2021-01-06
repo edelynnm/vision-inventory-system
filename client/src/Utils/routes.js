@@ -1,12 +1,11 @@
-import { DashboardRounded, LocalMallRounded, SupervisorAccountRounded, TrendingUpRounded, ShoppingCartRounded, ExitToAppRounded, LocalOfferRounded } from "@material-ui/icons";
+import { DashboardRounded, LocalMallRounded, SupervisorAccountRounded, TrendingUpRounded, ExitToAppRounded, LocalOfferRounded } from "@material-ui/icons";
 import Dashboard from "../Components/dashboard";
-import Purchase from "../Components/purchase";
-import Inventory from "../Components/inventory"
+import Inventory from "../Components/Inventory/inventory"
 import Sales from "../Components/sales";
 import Employees from "../Components/employees";
 import Reports from "../Components/reports"
 
-const MainRoutes = [
+const PrivateRoutes = [
   {
     sidebarName: "Dashboard",
     icon: <DashboardRounded />,
@@ -44,4 +43,4 @@ const MainRoutes = [
   },
 ];
 
-export default MainRoutes;
+export default PrivateRoutes;
