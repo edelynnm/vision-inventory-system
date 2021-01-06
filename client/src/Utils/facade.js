@@ -1,10 +1,10 @@
-const fetch = (param, callback, mimeType, body = null) => {
+const fetch = (param, callback, setHeader = () => null, body = null) => {
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
-        const body = JSON.parse(xhr.responseText);
-        callback(body);
+        const jsonData = JSON.parse(xhr.responseText);
+        callback(jsonData);
       } else {
         console.error(xhr.statusText);
       }
@@ -12,20 +12,30 @@ const fetch = (param, callback, mimeType, body = null) => {
   };
 
   xhr.open(param.method, param.url, true);
-  if (["POST", "PUT", "PATCH"].includes(param.method)) {
-    xhr.setRequestHeader("Content-Type", mimeType);
-  }
+  setHeader(xhr);
   xhr.send(JSON.stringify(body));
 };
 
-const GET = (url) => (callback) => {
+
+const setHeader = (httpHeader) => (xhr) => {
+  xhr.setRequestHeader(httpHeader.header, httpHeader.type);
+}
+
+// TEMPLATE Methods
+const postMethods = ({url, httpHeader, body, callback}, method) => {
+  const param = { method, url };
+  return fetch(param, callback, setHeader(httpHeader), body);
+};
+
+// HTTP METHODS
+
+const GET = ({url, callback}) => {
   const param = { method: "GET", url };
   return fetch(param, callback);
 };
 
-const POST = (url, mimeType, body) => (callback) => {
-  const param = { method: "POST", url };
-  return fetch(param, callback, mimeType, body);
+const POST = ({url, httpHeader, body, callback}) => {
+  return postMethods({url, httpHeader, body, callback}, "POST")
 };
 
 const ajax = {
