@@ -38,9 +38,14 @@ const POST = ({url, httpHeader, body, callback}) => {
   return postMethods({url, httpHeader, body, callback}, "POST")
 };
 
+const PATCH = ({url, httpHeader, body, callback}) => {
+  return postMethods({url, httpHeader, body, callback}, "PATCH")
+};
+
 const ajax = {
   GET,
-  POST
+  POST,
+  PATCH
 }
 
 export default ajax;
