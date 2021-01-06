@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Divider,
@@ -9,7 +9,8 @@ import {
 } from "@material-ui/core";
 import theme from "../../Theme";
 import Routes from "../routes";
-import { Link, withRouter, Redirect} from "react-router-dom";
+import { Link, withRouter} from "react-router-dom";
+import { useAuth } from "../auth";
 
 const styles = (theme) => ({
   listItem: {
@@ -34,20 +35,14 @@ const useStyle = makeStyles(styles);
 
 const CustomDrawer = (props) => {
   const classes = useStyle(theme);
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const auth = useAuth();
 
-  // useEffect(() => {
-    
-  // })
-  
   const logoutUser = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem("token");
+    auth.logout();
   }
 
   return (
       <Fragment>
-        {/* {!isLoggedIn ? <Redirect to="/" /> : */}
         <div>
         <List>
           {Routes.map((route) => {
@@ -80,7 +75,6 @@ const CustomDrawer = (props) => {
           </ListItem>
         </List>
         </div>
-        {/* } */}
       </Fragment>
   );
 };
