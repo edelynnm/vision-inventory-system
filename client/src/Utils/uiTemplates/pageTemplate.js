@@ -11,14 +11,14 @@ import {
   Typography
 } from "@material-ui/core";
 import { MenuRounded } from "@material-ui/icons"
-import theme from "../Theme/index";
-import CustomDrawer from "../Utils/drawer";
+import theme from "../../Theme/index";
+import CustomDrawer from "./drawer";
 
 const styles = (theme) => ({
   main: {
     backgroundColor: theme.palette.primary.light,
     height: "100vh",
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up("sm")]: {
       padding: "100px 0 50px 300px"
     },
     padding: "100px 50px"
@@ -28,8 +28,8 @@ const styles = (theme) => ({
     zIndex: theme.zIndex.drawer + 1
   },
   menuButton: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'none',
+    [theme.breakpoints.up("sm")]: {
+      display: "none",
     },
   },
 });
