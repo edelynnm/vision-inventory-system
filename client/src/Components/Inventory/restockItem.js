@@ -3,14 +3,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
   Typography,
   TextField,
-  InputAdornment,
-  Button,
-  Snackbar,
-  IconButton,
+  Button
 } from "@material-ui/core";
-import { CloseRounded } from "@material-ui/icons";
-import { Alert } from "@material-ui/lab";
 import theme from "../../Theme/index";
+import ajax from "../../Utils/facade";
+import { useAuth } from "../../Utils/auth";
 // import ajax from "../../Utils/facade";
 
 const styles = (theme) => ({
@@ -42,22 +39,22 @@ const styles = (theme) => ({
 const useStyle = makeStyles(styles);
 
 const RestockItem = (props) => {
-  //openModal, itemCode
   const classes = useStyle(theme);
+  const auth = useAuth();
   const [itemQty, setItemQty] = useState("");
 
   // save additional item qty
   const saveItem = (e) => {
     e.preventDefault();
     const body = { itemCode: props.itemCode, itemQty };
-    console.log(body);
-    handleResponse({ success: false, message: "Quantity not valid" });
-    //   ajax.POST({
-    //     url: "http://localhost:8000/api/inventory/new-item",
-    //     httpHeader: { header: "Content-Type", type: "application/json" },
-    //     body: itemQty,
-    //     callback: handleResponse
-    //   });
+
+    ajax.POST({
+      url: "http://localhost:8000/api/inventory/restock",
+      header: { "Content-Type": "application/json" },
+      authToken: auth.token,
+      body: body,
+      callback: handleResponse
+    });
   };
 
   const handleChange = (e) => {
