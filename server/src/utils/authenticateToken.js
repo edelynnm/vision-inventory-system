@@ -7,12 +7,16 @@ export default (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      return res.status(401).json({ success: false, message: "No auth header found." });
+      return res
+        .status(401)
+        .json({ success: false, message: "No auth header found." });
     }
     const token = authHeader.slice(7);
     return jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
       if (err) {
-        return res.status(403).json({ success: false, message: "Invalid token" });
+        return res
+          .status(403)
+          .json({ success: false, message: "Invalid token" });
       }
       req.user = user;
       return next();
