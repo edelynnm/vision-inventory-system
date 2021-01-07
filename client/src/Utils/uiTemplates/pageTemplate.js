@@ -13,6 +13,7 @@ import {
 import { MenuRounded } from "@material-ui/icons"
 import theme from "../../Theme/index";
 import CustomDrawer from "./drawer";
+import { useAuth } from "../auth";
 
 const styles = (theme) => ({
   main: {
@@ -24,7 +25,6 @@ const styles = (theme) => ({
     padding: "100px 50px"
   },
   appBar: {
-    padding: "0 30px",
     zIndex: theme.zIndex.drawer + 1
   },
   menuButton: {
@@ -39,6 +39,7 @@ const useStyle = makeStyles(styles);
 const PageTemplate = (props) => {
   const classes = useStyle(theme);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const auth = useAuth();
   
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -58,7 +59,7 @@ const PageTemplate = (props) => {
             <MenuRounded />
           </IconButton>
           <Typography variant="h6" noWrap>
-            Business Name
+            {auth.user.businessName}
           </Typography>
         </Toolbar>
       </AppBar>
