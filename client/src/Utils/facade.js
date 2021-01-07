@@ -1,51 +1,51 @@
-const fetch = (param, callback, setHeader = () => null, body = null) => {
+const fetch = (param, headers, authToken = false, callback, body = null) => {
   const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4) {
-      if (xhr.status === 200) {
-        const jsonData = JSON.parse(xhr.responseText);
-        callback(jsonData);
-      } else {
-        console.error(xhr.statusText);
-      }
+
+  xhr.onload = function () {
+    if (xhr.status !== 200) {
+      console.error(`${xhr.status}: ${xhr.statusText}`);
+    } else {
+      const jsonData = JSON.parse(xhr.responseText);
+      callback(jsonData);
     }
   };
 
+  xhr.onerror = function () {
+    alert("Request Failed");
+  };
+
   xhr.open(param.method, param.url, true);
-  setHeader(xhr);
-  xhr.send(JSON.stringify(body));
-};
+  if (authToken) {
+    xhr.setRequestHeader("Authorization", `Bearer ${authToken}`);
+  }
 
-
-const setHeader = (httpHeader) => (xhr) => {
-  xhr.setRequestHeader(httpHeader.header, httpHeader.type);
-}
-
-// TEMPLATE Methods
-const postMethods = ({url, httpHeader, body, callback}, method) => {
-  const param = { method, url };
-  return fetch(param, callback, setHeader(httpHeader), body);
+  if (headers !== undefined) {
+    for (const [header, value] of Object.entries(headers)) {
+      xhr.setRequestHeader(header, value);
+    }
+  }
+  
+  xhr.send(body);
 };
 
 // HTTP METHODS
 
-const GET = ({url, callback}) => {
-  const param = { method: "GET", url };
-  return fetch(param, callback);
+const GET = ({ url, header, authToken, callback }) => {
+  return fetch({ method: "GET", url }, header, authToken, callback);
 };
 
-const POST = ({url, httpHeader, body, callback}) => {
-  return postMethods({url, httpHeader, body, callback}, "POST")
+const POST = ({ url, header, authToken, callback, body }) => {
+  return fetch({ method: "POST", url }, header, authToken, callback, JSON.stringify(body));
 };
 
-const PATCH = ({url, httpHeader, body, callback}) => {
-  return postMethods({url, httpHeader, body, callback}, "PATCH")
+const PATCH = ({ url, header, authToken, callback, body }) => {
+  return fetch({ method: "PATCH", url }, header, authToken, callback, JSON.stringify(body));
 };
 
 const ajax = {
   GET,
   POST,
-  PATCH
-}
+  PATCH,
+};
 
 export default ajax;
