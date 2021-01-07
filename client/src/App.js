@@ -7,7 +7,7 @@ import Login from "./Components/AuthScreen/login";
 import Signup from "./Components/AuthScreen/signup";
 import VerifyEmail from "./Components/AuthScreen/verifyEmail";
 import { AuthProvider } from "./Utils/auth";
-import PrivateRoute from "./Components/Auth/privateRoute";
+import PrivateRoute from "./Utils/privateRoute";
 
 function App() {
   return (
@@ -28,8 +28,9 @@ function App() {
                 key={route.sidebarName}
                 exact
                 path={route.path}
-                component={route.component}
-              />
+              >
+                <route.component forbiddenRoleIDs={route.forbiddenRoleIDs}/>
+                </PrivateRoute>
             ))}
           </Switch>
         </Router>

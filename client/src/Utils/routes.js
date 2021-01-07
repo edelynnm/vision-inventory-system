@@ -5,42 +5,42 @@ import Sales from "../Components/sales";
 import Employees from "../Components/employees";
 import Reports from "../Components/reports"
 
-const PrivateRoutes = [
+const ProtectedRoutes = [
   {
     sidebarName: "Dashboard",
     icon: <DashboardRounded />,
     path: "/dashboard",
     component: Dashboard,
+    forbiddenRoleIDs: []
   },
   {
     sidebarName: "Inventory",
     icon: <LocalMallRounded />,
     path: "/inventory",
-    component: Inventory
+    component: Inventory,
+    forbiddenRoleIDs: [] // provide local forbidden roles for new item & restock feat
   },
   {
     sidebarName: "Sales",
     icon: <LocalOfferRounded />,
     path: "/sales",
-    component: Sales
+    component: Sales,
+    forbiddenRoleIDs: [3]
   },
   {
     sidebarName: "Reports",
     icon: <TrendingUpRounded />,
     path: "/reports",
-    component: Reports
+    component: Reports,
+    forbiddenRoleIDs: [2,3]
   },
   {
     sidebarName: "Employees",
     icon: <SupervisorAccountRounded />,
     path: "/employees",
-    component: Employees
-  },
-  {
-    sidebarName: "Logout",
-    icon: <ExitToAppRounded />,
-    path: "/logout",
-  },
+    component: Employees,
+    forbiddenRoleIDs: [2,3]
+  }
 ];
 
-export default PrivateRoutes;
+export default ProtectedRoutes;
