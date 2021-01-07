@@ -114,7 +114,13 @@ const Inventory = (props) => {
 
   useEffect(() => {
     getItems();
-  }, [items]);
+    const interval = setInterval(() => {
+      getItems();
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     searchItem(items);
