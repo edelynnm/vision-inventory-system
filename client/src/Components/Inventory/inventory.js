@@ -14,15 +14,15 @@ import {
   Button,
   Modal,
   Snackbar,
-  IconButton,
 } from "@material-ui/core";
-import { SearchRounded, AddRounded, CloseRounded } from "@material-ui/icons";
+import { SearchRounded, AddRounded } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import theme from "../../Theme/index";
 import PageTemplate from "../../Utils/uiTemplates/pageTemplate";
 import ajax from "../../Utils/facade";
 import AddNewItem from "./addNewItem";
 import RestockItem from "./restockItem";
+import { useAuth } from "../../Utils/auth";
 
 const styles = (theme) => ({
   margin: {
@@ -68,6 +68,9 @@ const styles = (theme) => ({
     width: 300,
     padding: "40px 50px 50px 50px",
   },
+  hide: {
+    display: "hidden",
+  },
 });
 
 const headerStyle = (theme) => ({
@@ -94,8 +97,12 @@ const currencyFormatter = new Intl.NumberFormat("en-PH", {
   currency: "PHP",
 });
 
-const Inventory = () => {
+// locally forbid role on restock and add new item function inside this component.
+const localForbiddenIDs = [2];
+
+const Inventory = (props) => {
   const classes = useStyle(theme);
+  const auth = useAuth();
   const [items, setItems] = useState([]);
   const [matchItems, setMatchItems] = useState([]);
   const [searchWord, setSearchWord] = useState("");
@@ -111,7 +118,15 @@ const Inventory = () => {
 
   useEffect(() => {
     searchItem(items);
-  }, [searchWord]); 
+  }, [searchWord]);
+
+  const getItems = () => {
+    ajax.GET({
+      url: "http://localhost:8000/api/inventory",
+      authToken: auth.token,
+      callback: setItems,
+    });
+  };
 
   const searchItem = (items) => {
     const results = items.filter((item) =>
@@ -119,18 +134,7 @@ const Inventory = () => {
         ? item
         : ""
     );
-    setMatchItems(results)
-  };
-  
-  const getItems = () => {
-    ajax.GET({
-      url: "http://localhost:8000/api/inventory",
-      callback: setItems,
-    });
-  };
-
-  const handleChange = (e) => {
-    setSearchWord(e.target.value);
+    setMatchItems(results);
   };
 
   const openNewItemModal = () => {
@@ -146,9 +150,13 @@ const Inventory = () => {
     setOpenSnackbar(!openSnackbar);
   };
 
-  const handleSnackbar = ({ success, message }) => {
+  const showMessage = ({ success, message }) => {
     setStatus({ success, message });
     handleCloseSnackbar();
+  };
+
+  const handleChange = (e) => {
+    setSearchWord(e.target.value);
   };
 
   // Components
@@ -163,32 +171,28 @@ const Inventory = () => {
         autoHideDuration={5000}
         onClose={handleCloseSnackbar}
       >
-        <div style={{ marginBottom: 40 }}>
-          <Alert
-            elevation={0}
-            variant="filled"
-            onClose={handleCloseSnackbar}
-            severity={status.success ? "success" : "error"}
-          >
-            {status.message}
-          </Alert>
-        </div>
+        <Alert
+          elevation={0}
+          variant="filled"
+          onClose={handleCloseSnackbar}
+          severity={status.success ? "success" : "error"}
+        >
+          {status.message}
+        </Alert>
       </Snackbar>
     </div>
   );
+
   // SUB-COMPONENTS
-  const displayText =
-    searchWord !== "" && matchItems.length === 0 ? (
-      <div className={classes.displayText}>
-        <Typography align="center">No match found</Typography>
-      </div>
-    ) : items.length === 0 ? (
-      <div className={classes.displayText}>
-        <Typography align="center">No Items</Typography>
-      </div>
-    ) : (
-      ""
-    );
+  const displayText =  !matchItems && !searchWord ? (
+    <div className={classes.displayText}>
+      <Typography align="center">No Match Found</Typography>
+    </div>
+  ) : !items ? (
+    <div className={classes.displayText}>
+      <Typography align="center">No Items</Typography>
+    </div>
+  ) : "";
 
   const searchBar = (
     <div>
@@ -225,7 +229,7 @@ const Inventory = () => {
   const toolbar = (
     <div className={classes.toolbar}>
       {searchBar}
-      {newItemBtn}
+      {localForbiddenIDs.includes(auth.user.roleID) ? "" : newItemBtn}
     </div>
   );
 
@@ -233,10 +237,7 @@ const Inventory = () => {
     <div style={{ height: "100%" }}>
       <Modal open={newItemModal} className={classes.modal} disableAutoFocus>
         <Paper className={classes.modalContent} style={{ height: 500 }}>
-          <AddNewItem
-            openModal={openNewItemModal}
-            openSnackbar={handleSnackbar}
-          />
+          <AddNewItem openModal={openNewItemModal} openSnackbar={showMessage} />
         </Paper>
       </Modal>
     </div>
@@ -249,39 +250,42 @@ const Inventory = () => {
           <RestockItem
             openModal={openRestockModal}
             itemCode={selectedItemCode}
-            openSnackbar={handleSnackbar}
+            openSnackbar={showMessage}
           />
         </Paper>
       </Modal>
     </div>
   );
 
-  const tableData = (items) => (
+  const tableData = (items) =>
     items.map((item) => (
       <TableRow key={item.item_code} hover>
         <StyledTableCell>{item.item_code}</StyledTableCell>
         <StyledTableCell>{item.item_desc}</StyledTableCell>
         <StyledTableCell>{item.item_unit}</StyledTableCell>
-        <StyledTableCell>{item.item_qty}</StyledTableCell>
         <StyledTableCell>
           {currencyFormatter.format(Number(item.item_unit_price))}
         </StyledTableCell>
-        <StyledTableCell align="center">
-          {item.reorder_point}
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          <Button
-            variant="contained"
-            disableElevation
-            className={classes.restockBtn}
-            onClick={() => openRestockModal(item.item_code)}
-          >
-            Restock
-          </Button>
-        </StyledTableCell>
+        <StyledTableCell>{item.item_qty}</StyledTableCell>
+        <StyledTableCell align="center">{item.reorder_point}</StyledTableCell>
+
+        {localForbiddenIDs.includes(auth.user.roleID) ? (
+          ""
+        ) : (
+          <StyledTableCell align="center">
+            <Button
+              variant="contained"
+              disableElevation
+              className={classes.restockBtn}
+              onClick={() => openRestockModal(item.item_code)}
+            >
+              Restock
+            </Button>
+          </StyledTableCell>
+        )}
       </TableRow>
-    ))
-  )
+    ));
+
   // MAIN COMPONENT
   const inventory = (
     <div className={classes.margin}>
@@ -302,18 +306,22 @@ const Inventory = () => {
                 <TableHeader width={120}>Item Code</TableHeader>
                 <TableHeader width={450}>Description</TableHeader>
                 <TableHeader width={80}>Unit</TableHeader>
-                <TableHeader width={80}>Qty</TableHeader>
                 <TableHeader width={100}>Unit Price</TableHeader>
+                <TableHeader width={80}>Qty</TableHeader>
                 <TableHeader width={90} align="center">
                   Reorder Point
                 </TableHeader>
-                <TableHeader width={50} align="center">
-                  Actions
-                </TableHeader>
+                {localForbiddenIDs.includes(auth.user.roleID) ? (
+                  ""
+                ) : (
+                  <TableHeader width={50} align="center">
+                    Actions
+                  </TableHeader>
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
-              {searchWord !== "" ? tableData(matchItems): tableData(items)}
+              {searchWord !== "" ? tableData(matchItems) : tableData(items)}
             </TableBody>
           </Table>
           {displayText}

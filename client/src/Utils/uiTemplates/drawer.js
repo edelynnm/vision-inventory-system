@@ -11,6 +11,7 @@ import theme from "../../Theme";
 import Routes from "../routes";
 import { Link, withRouter} from "react-router-dom";
 import { useAuth } from "../auth";
+import { ExitToAppRounded } from "@material-ui/icons";
 
 const styles = (theme) => ({
   listItem: {
@@ -47,7 +48,7 @@ const CustomDrawer = (props) => {
         <List>
           {Routes.map((route) => {
             const isSelected = props.location.pathname.includes(route.path) ? true : false
-            if (route.sidebarName === "Logout") return null;
+            if (route.forbiddenRoleIDs.includes(auth.user.roleID)) return null;
             return (
             <ListItem
               button
@@ -70,7 +71,7 @@ const CustomDrawer = (props) => {
             onClick={logoutUser}
             className={classes.listItem}
           >
-            <ListItemIcon className={classes.listItem}>{Routes[Routes.length-1].icon}</ListItemIcon>
+            <ListItemIcon className={classes.listItem}><ExitToAppRounded /></ListItemIcon>
             <ListItemText primary="Logout" />
           </ListItem>
         </List>
