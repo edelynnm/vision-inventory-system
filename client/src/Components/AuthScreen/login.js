@@ -72,22 +72,13 @@ const Login = () => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-
-  const handleHTTPResponse = (body) => {
-    if (!body.success) {
-      showErrMsg(body.message); //handle errors via snackbar
-    } else {
-      setLoginStatus({ status: true, message: body.message });
-      auth.login(body.token);
-      
-    }
-  };
+  const handleHTTPResponse = (body) => !body.success ? showErrMsg(body.message) : auth.login(body);
 
   const onSubmitForm = (e) => {
     e.preventDefault();
     ajax.POST({
       url: "http://localhost:8000/api/auth/login",
-      httpHeader: { header: "Content-Type", type: "application/json" },
+      header: { "Content-Type":"application/json" },
       body: values,
       callback: handleHTTPResponse,
     });

@@ -5,11 +5,10 @@ import {
   TextField,
   InputAdornment,
   Button,
-  Snackbar,
-  IconButton,
 } from "@material-ui/core";
 import theme from "../../Theme/index";
 import ajax from "../../Utils/facade";
+import { useAuth } from "../../Utils/auth";
 
 const styles = (theme) => ({
   textFieldMargin: {
@@ -41,6 +40,7 @@ const useStyle = makeStyles(styles);
 
 const AddNewItem = (props) => {
   const classes = useStyle(theme);
+  const auth = useAuth();
   const [newItem, setNewItem] = useState({
     itemCode: "",
     itemBrand: "",
@@ -51,12 +51,18 @@ const AddNewItem = (props) => {
     reorderPoint: "",
   });
 
+  const handleResponse = (body) => {
+    props.openModal();
+    props.openSnackbar(body);
+  };
+
   // save new item
   const saveItem = (e) => {
     e.preventDefault();
     ajax.POST({
       url: "http://localhost:8000/api/inventory/new-item",
-      httpHeader: { header: "Content-Type", type: "application/json" },
+      header: {"Content-Type" : "application/json"},
+      authToken: auth.token,
       body: newItem,
       callback: handleResponse,
     });
@@ -64,11 +70,6 @@ const AddNewItem = (props) => {
 
   const handleNewItemChange = (e) => {
     setNewItem({ ...newItem, [e.target.name]: e.target.value });
-  };
-
-  const handleResponse = (body) => {
-    props.openModal();
-    props.openSnackbar(body);
   };
 
   // Variables
