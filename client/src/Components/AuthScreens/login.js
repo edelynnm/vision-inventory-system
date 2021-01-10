@@ -14,10 +14,11 @@ import {
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import ajax from "../../Utils/facade";
-import AuthTemplate from "../../Utils/uiTemplates/authTemplate";
+import AuthTemplate from "../Subcomponents/uiTemplates/authTemplate";
 import logo from "../../Assets/icons/vision-logo@2x.png";
 import welcomeImg from "../../Assets/images/welcome-img.jpg";
-import { useAuth } from "../../Utils/auth";
+import { useAuth } from "../Subcomponents/auth";
+import { useLocation } from "react-router-dom";
 
 const styles = {
   root: {
@@ -53,17 +54,17 @@ const useStyle = makeStyles(styles);
 const Login = () => {
   const classes = useStyle();
   const auth = useAuth();
-
+  const { state } = useLocation();
+  const { from } = state || { from: "/" } // important to redirect to prev page when refreshing
+  const [redirect, setRedirect ] = useState(false)
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [values, setValues] = useState({
     email: "",
     password: "",
     showPassword: false,
   });
-  const [loginStatus, setLoginStatus] = useState({
-    status: false,
-    message: "",
-  });
-
+  const [errMessage, setErrMessage] = useState("");
+  
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
   };
@@ -72,31 +73,38 @@ const Login = () => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  const handleHTTPResponse = (body) => !body.success ? showErrMsg(body.message) : auth.login(body);
-
   const onSubmitForm = (e) => {
     e.preventDefault();
     ajax.POST({
       url: "http://localhost:8000/api/auth/login",
-      header: { "Content-Type":"application/json" },
+      headers: { "Content-Type": "application/json" },
       body: values,
       callback: handleHTTPResponse,
     });
+    
+  };
+  
+  const handleHTTPResponse = (body) => {
+    if (!body.success) {
+      showErrMessage(body.message);
+    } else {
+      auth.login(body);
+      setRedirect(true)
+      window.location.reload();
+    }
   };
 
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const showErrMessage = (message) => {
+    setErrMessage(message);
+    handleCloseSnackbar();
+  };
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(!openSnackbar);
   };
 
-  const showErrMsg = (message) => {
-    setLoginStatus({ ...loginStatus, message });
-    handleCloseSnackbar();
-  };
-
   // Components
-  const snackbar = (
+  const snackbar = ( // for ERROR ONLY
     <div>
       <Snackbar
         anchorOrigin={{
@@ -113,7 +121,7 @@ const Login = () => {
             onClose={handleCloseSnackbar}
             severity="error"
           >
-            {loginStatus.message}
+            {errMessage}
           </Alert>
         </div>
       </Snackbar>
@@ -211,7 +219,11 @@ const Login = () => {
     </div>
   );
 
-  return auth.user ? (<Redirect to="/dashboard"/ >) :(
+  if (redirect) {
+   return <Redirect to="/dashboard" />
+  }
+
+  return auth.user ? <Redirect to={from} /> : (
     <Fragment>
       <AuthTemplate
         leftScreenStyle={classes.authScreen}
