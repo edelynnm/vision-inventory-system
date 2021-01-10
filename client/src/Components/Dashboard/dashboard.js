@@ -3,9 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
   Typography,
 } from "@material-ui/core";
-import theme from "../Theme/index";
-import PageTemplate from "../Utils/uiTemplates/pageTemplate"
-import { useAuth } from "../Utils/auth";
+import theme from "../../Theme/index";
+import PageTemplate from "../Subcomponents/uiTemplates/pageTemplate"
+import { useAuth } from "../Subcomponents/auth";
 
 const styles = (theme) => ({
   main: {
