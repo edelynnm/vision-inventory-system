@@ -30,22 +30,27 @@ const fetch = (param, headers, authToken = false, callback, body = null) => {
 
 // HTTP METHODS
 
-const GET = ({ url, header, authToken, callback }) => {
-  return fetch({ method: "GET", url }, header, authToken, callback);
+const GET = ({ url, headers, authToken, callback }) => {
+  return fetch({ method: "GET", url }, headers, authToken, callback);
 };
 
-const POST = ({ url, header, authToken, callback, body }) => {
-  return fetch({ method: "POST", url }, header, authToken, callback, JSON.stringify(body));
+const DELETE = ({ url, headers, authToken, callback }) => {
+  return fetch({ method: "DELETE", url }, headers, authToken, callback);
 };
 
-const PATCH = ({ url, header, authToken, callback, body }) => {
-  return fetch({ method: "PATCH", url }, header, authToken, callback, JSON.stringify(body));
+const POST = ({ url, headers, authToken, callback, body }) => {
+  return fetch({ method: "POST", url }, headers, authToken, callback, JSON.stringify(body));
+};
+
+const PATCH = ({ url, headers, authToken, callback, body }) => {
+  return fetch({ method: "PATCH", url }, headers, authToken, callback, JSON.stringify(body));
 };
 
 const ajax = {
   GET,
   POST,
   PATCH,
+  DELETE
 };
 
 export default ajax;
