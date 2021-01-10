@@ -1,5 +1,7 @@
 import { Fragment, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { Alert } from "@material-ui/lab";
+import { Link } from "react-router-dom";
 import {
   TextField,
   Button,
@@ -15,10 +17,8 @@ import {
   ChevronLeftRounded,
 } from "@material-ui/icons";
 import theme from "../../Theme/index";
-import { Link } from "react-router-dom";
 import ajax from "../../Utils/facade";
-import AuthTemplate from "../../Utils/uiTemplates/authTemplate";
-import { Alert } from "@material-ui/lab";
+import AuthTemplate from "../Subcomponents/uiTemplates/authTemplate";
 
 const styles = (theme) => ({
   rightScreenStyle: {
@@ -92,7 +92,7 @@ const Signup = () => {
     e.preventDefault();
     ajax.POST({
       url: "http://localhost:8000/api/auth/signup",
-      httpHeader: { header: "Content-Type", type: "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: values,
       callback: handleResponse,
     });
@@ -211,7 +211,7 @@ const Signup = () => {
 
   const verifyMsg = (
     <div>
-      <Typography>{formStatus.message}</Typography>
+      <Typography variant="h5">{formStatus.message}</Typography>
     </div>
   );
 
