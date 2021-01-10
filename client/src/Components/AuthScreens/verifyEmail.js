@@ -1,11 +1,12 @@
 import { Fragment, useState, useEffect } from "react";
 import { Typography, Button } from "@material-ui/core";
-import { Link } from "react-router-dom";
-import { HomeRounded } from "@material-ui/icons";
+import { Link, Redirect } from "react-router-dom";
+import { ChevronLeftRounded } from "@material-ui/icons";
 import ajax from "../../Utils/facade";
-import AuthTemplate from "../../Utils/uiTemplates/authTemplate";
+import AuthTemplate from "../Subcomponents/uiTemplates/authTemplate";
 import { makeStyles } from "@material-ui/core/styles";
 import theme from "../../Theme/index";
+import parseQS from "../../Utils/parseQS";
 
 const styles = (theme) => ({
   rightScreenStyle: {
@@ -31,26 +32,45 @@ const styles = (theme) => ({
 
 const useStyle = makeStyles(styles);
 
-const VerifyEmail = ({ location }) => {
+const VerifyEmail = (props) => {
   const classes = useStyle(theme);
   const [verificationMsg, setVerificationMsg] = useState("");
+  const [type, setType] = useState(null)
+  const [isVerified, setIsVerified] = useState(false)
+  const queryString = props.location.search;
+  const url = window.location.href
 
   useEffect(() => { // verify email on load
     verifyEmail();
+    getType()
   }, []);
 
-  const handleResponse = ({ message }) => {
-    return setVerificationMsg(message);
+  console.log('msg',verificationMsg);
+  console.log("isVerified", isVerified);
+  console.log('type',type)
+  console.log(type)
+  
+  const handleResponse = (body) => {
+    if (body.success) {
+      setIsVerified(true)
+      setType(body.type)
+    }
+
+    return setVerificationMsg(body.message);
   };
 
   const verifyEmail = () => {
-    const queryString = location.search;
     ajax.PATCH({
-      url: `http://localhost:8000/api/auth/signup/verify-email${queryString}`,
-      httpHeader: { header: "Content-Type", type: "appliation/json" },
+      url: `http://localhost:8000/api/auth/verify-email${queryString}`,
+      headers: { "Content-Type":"application/json" },
       callback: handleResponse,
     });
   };
+
+  const getType = () => {
+    const type = parseQS(url, "type")
+    setType(type)
+  }
 
   const leftScreen = (
     <div>
@@ -60,17 +80,17 @@ const VerifyEmail = ({ location }) => {
         className={classes.backButton}
         to={"/"}
       >
-        <HomeRounded className={classes.homeBtn} />
+        <ChevronLeftRounded className={classes.chevron} />
+        <Typography variant="subtitle2">
+          LOGIN
+        </Typography>
       </Button>
-      <div
-        style={{
-          marginTop: 80,
-        }}
-      >
+      <div>
         <Typography variant="h5">{verificationMsg}</Typography>
       </div>
     </div>
   );
+
   const showMessage = (
     <Fragment>
       <AuthTemplate
@@ -79,6 +99,12 @@ const VerifyEmail = ({ location }) => {
       />
     </Fragment>
   );
+
+  if(type === "emp" && isVerified) {
+    return (
+      <Redirect to={`/auth/signup/emp/${props.location.search}`} />
+    )
+  }
 
   return (
     <Fragment>
