@@ -8,23 +8,14 @@ router
   // Display all items
   .get("/", async (req, res) => {
     try {
-      const query = {
-        text: `SELECT item_code,
-        CONCAT_WS(' ', item_brand, item_specs) AS item_desc,
-        item_qty, item_unit_price,
-        item_unit, reorder_point
-        FROM items
-        ORDER BY item_desc ASC;
-        `,
-      };
-      const { rows } = await pgClient.query(query);
+      const { rows } = await pgClient.query("SELECT * FROM items;");
       return res.json(rows);
     } catch (error) {
       console.log(error);
       return res.sendStatus(500);
     }
   })
-  .use(authenticateRole([2]))
+  .use(authenticateRole([1, 3]))
   .post("/new-item", async (req, res) => {
     try {
       const {
