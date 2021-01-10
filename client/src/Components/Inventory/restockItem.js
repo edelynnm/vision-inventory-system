@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core";
 import theme from "../../Theme/index";
 import ajax from "../../Utils/facade";
-import { useAuth } from "../../Utils/auth";
+import { useAuth } from "../Subcomponents/auth";
 // import ajax from "../../Utils/facade";
 
 const styles = (theme) => ({
@@ -50,7 +50,7 @@ const RestockItem = (props) => {
 
     ajax.POST({
       url: "http://localhost:8000/api/inventory/restock",
-      header: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       authToken: auth.token,
       body: body,
       callback: handleResponse

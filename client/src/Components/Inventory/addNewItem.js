@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import theme from "../../Theme/index";
 import ajax from "../../Utils/facade";
-import { useAuth } from "../../Utils/auth";
+import { useAuth } from "../Subcomponents/auth";
 
 const styles = (theme) => ({
   textFieldMargin: {
@@ -51,23 +51,23 @@ const AddNewItem = (props) => {
     reorderPoint: "",
   });
 
-  const handleResponse = (body) => {
-    props.openModal();
-    props.openSnackbar(body);
-  };
-
   // save new item
   const saveItem = (e) => {
     e.preventDefault();
     ajax.POST({
       url: "http://localhost:8000/api/inventory/new-item",
-      header: {"Content-Type" : "application/json"},
+      headers: {"Content-Type" : "application/json"},
       authToken: auth.token,
       body: newItem,
       callback: handleResponse,
     });
   };
 
+  const handleResponse = (body) => {
+    props.openModal();
+    props.openSnackbar(body);
+  };
+  
   const handleNewItemChange = (e) => {
     setNewItem({ ...newItem, [e.target.name]: e.target.value });
   };

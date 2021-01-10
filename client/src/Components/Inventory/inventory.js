@@ -18,11 +18,11 @@ import {
 import { SearchRounded, AddRounded } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import theme from "../../Theme/index";
-import PageTemplate from "../../Utils/uiTemplates/pageTemplate";
+import PageTemplate from "../Subcomponents/uiTemplates/pageTemplate";
 import ajax from "../../Utils/facade";
 import AddNewItem from "./addNewItem";
 import RestockItem from "./restockItem";
-import { useAuth } from "../../Utils/auth";
+import { useAuth } from "../Subcomponents/auth";
 
 const styles = (theme) => ({
   margin: {
@@ -111,7 +111,7 @@ const Inventory = (props) => {
   const [restockModal, setRestockModal] = useState(false);
   const [status, setStatus] = useState({ success: false, message: "" });
   const [openSnackbar, setOpenSnackbar] = useState(false);
-
+  
   useEffect(() => {
     getItems();
     const interval = setInterval(() => {
@@ -152,20 +152,20 @@ const Inventory = (props) => {
     setSelectedItemCode(selectedItemCode);
   };
 
-  const handleCloseSnackbar = () => {
+  const handleSnackbar = () => {
     setOpenSnackbar(!openSnackbar);
   };
 
   const showMessage = ({ success, message }) => {
     setStatus({ success, message });
-    handleCloseSnackbar();
+    handleSnackbar();
   };
 
   const handleChange = (e) => {
     setSearchWord(e.target.value);
   };
 
-  // Components
+  // SUB-COMPONENTS
   const snackbar = (
     <div>
       <Snackbar
@@ -175,12 +175,12 @@ const Inventory = (props) => {
         }}
         open={openSnackbar}
         autoHideDuration={5000}
-        onClose={handleCloseSnackbar}
+        onClose={handleSnackbar}
       >
         <Alert
           elevation={0}
           variant="filled"
-          onClose={handleCloseSnackbar}
+          onClose={handleSnackbar}
           severity={status.success ? "success" : "error"}
         >
           {status.message}
@@ -189,12 +189,11 @@ const Inventory = (props) => {
     </div>
   );
 
-  // SUB-COMPONENTS
-  const displayText =  !matchItems && !searchWord ? (
+  const displayText = !matchItems && !searchWord ? (
     <div className={classes.displayText}>
       <Typography align="center">No Match Found</Typography>
     </div>
-  ) : !items ? (
+  ) : items.length === 0 ? (
     <div className={classes.displayText}>
       <Typography align="center">No Items</Typography>
     </div>
@@ -267,7 +266,7 @@ const Inventory = (props) => {
     items.map((item) => (
       <TableRow key={item.item_code} hover>
         <StyledTableCell>{item.item_code}</StyledTableCell>
-        <StyledTableCell>{item.item_desc}</StyledTableCell>
+        <StyledTableCell>{`${item.item_brand} ${item.item_specs}`}</StyledTableCell>
         <StyledTableCell>{item.item_unit}</StyledTableCell>
         <StyledTableCell>
           {currencyFormatter.format(Number(item.item_unit_price))}
