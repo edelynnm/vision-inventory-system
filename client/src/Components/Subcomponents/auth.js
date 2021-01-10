@@ -1,49 +1,50 @@
 import ms from "ms";
 import { useState, useContext, createContext, useEffect } from "react";
-import ajax from "./facade";
+import ajax from "../../Utils/facade";
 
 const authContext = createContext();
 
 // handle user state
 const useProvideAuth = () => {
-  const [user, setUser] = useState(false);
-  const [token, setToken] = useState("");
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
     const isLoggedIn = () => {
       const expiration = getExpiration();
-      return Date.now < expiration ? true : false;
-    };
-
-    const fetchUser = () => {
-      if (isLoggedIn) {
-        const token = localStorage.getItem("token");
-        setToken(token)
-        getUser(token)
-      } else {
-        alert("Session expired, please login again.")
+      if (expiration !== null && Date.now() >= expiration) {
+        alert("Session expired, please login again.");
         logout();
       }
     };
 
-    const getUser = (token) => {
-      ajax.GET({
-        url:"http://localhost:8000/api/user",
-        authToken: token,
-        callback: setUser
-      })
-    }
+    const fetchUser = () => {
+      const token = localStorage.getItem("token");
+      setToken(token);
 
-    fetchUser() 
-    const interval =  setInterval(() => isLoggedIn(), 5000);
+      if (token) {
+        getUser(token);
+      }
+    };
+
+    fetchUser();
+
+    const interval = setInterval(() => isLoggedIn(), 1000);
     return () => {
-      console.log('token expired')
-      fetchUser()
-      clearInterval(interval)
-    }
+      fetchUser();
+      clearInterval(interval);
+    };
   }, []);
 
   const getExpiration = () => JSON.parse(localStorage.getItem("expires_in"));
+
+  const getUser = (token) => {
+    ajax.GET({
+      url: "http://localhost:8000/api/user",
+      authToken: token,
+      callback: setUser,
+    });
+  };
 
   const login = (authResult) => {
     const issuedAt = Date.now();
@@ -51,17 +52,15 @@ const useProvideAuth = () => {
 
     localStorage.setItem("token", authResult.token);
     localStorage.setItem("expires_in", expiresIn);
-    window.location.reload();
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("expires_in");
     setUser(false);
-    window.location.reload();
   };
 
-  return { user, token, login, logout };
+  return { user, login, logout, token };
 };
 
 // Component to provide the value to be inherited

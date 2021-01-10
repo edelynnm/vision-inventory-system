@@ -7,7 +7,7 @@ import {
   ListItemText,
   ListItemIcon,
 } from "@material-ui/core";
-import theme from "../../Theme";
+import theme from "../../../Theme";
 import Routes from "../routes";
 import { Link, withRouter} from "react-router-dom";
 import { useAuth } from "../auth";
@@ -37,7 +37,7 @@ const useStyle = makeStyles(styles);
 const CustomDrawer = (props) => {
   const classes = useStyle(theme);
   const auth = useAuth();
-
+ 
   const logoutUser = () => {
     auth.logout();
   }

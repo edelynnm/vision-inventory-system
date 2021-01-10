@@ -11,7 +11,7 @@ import {
   Typography
 } from "@material-ui/core";
 import { MenuRounded } from "@material-ui/icons"
-import theme from "../../Theme/index";
+import theme from "../../../Theme/index";
 import CustomDrawer from "./drawer";
 import { useAuth } from "../auth";
 
