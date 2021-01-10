@@ -8,6 +8,7 @@ import employees from "./Routes/employees.js";
 import authenticateToken from "./utils/authenticateToken.js";
 import sales from "./Routes/sales.js";
 import user from "./Routes/user.js";
+import reports from "./Routes/reports.js";
 
 const app = express();
 const port = 8000;
@@ -29,8 +30,8 @@ app
   .use("/api/user", user)
   .use("/api/inventory", inventory)
   .use("/api/sales", sales)
+  .use("/api/report", reports)
   .use("/api/employees", employees)
-
   .listen(port, () => {
     console.log("Server has started: http://localhost:8000");
   });
