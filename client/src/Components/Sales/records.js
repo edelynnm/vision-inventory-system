@@ -8,7 +8,8 @@ import {
   TableCell,
   Paper,
   Typography,
-  Button
+  Button,
+  Modal
 } from "@material-ui/core";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { ChevronLeftRounded } from "@material-ui/icons";
@@ -17,6 +18,7 @@ import { useAuth } from "../Subcomponents/auth";
 import PageTemplate from "../Subcomponents/uiTemplates/pageTemplate";
 import ajax from "../../Utils/facade";
 import theme from "../../Theme";
+import ItemTransactions from "./viewItems";
 
 const styles = (theme) => ({
   margin: {
@@ -46,6 +48,23 @@ const styles = (theme) => ({
       transition: "0.3s",
     },
   },
+  actionBtn: {
+    fontWeight: 700,
+    backgroundColor: "#fa5d1e",
+    color: "white",
+    border: "1px solid #e34c10",
+    "&:hover": {
+      backgroundColor: "#d64a11",
+    },
+  },
+  modal: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    padding: "40px 50px 50px 50px",
+  },
 });
 
 const headerStyle = (theme) => ({
@@ -72,6 +91,8 @@ const TransactionRecords = () => {
   const auth = useAuth();
   const [transactions, setTransactions] = useState([]);
   const [returnStatus , setReturnStatus ] = useState(false);
+  const [selectedTransID , setSelectedTransID ] = useState("");
+  const [itemsModal , setItemsModal ] = useState(false);
 
 
   useEffect(() => {
@@ -90,7 +111,13 @@ const TransactionRecords = () => {
     setReturnStatus(true)
   }
 
-  //SUBCOMPONENT
+  const openViewItems = (selectedTransID) => {
+    setItemsModal(!itemsModal);
+    setSelectedTransID(selectedTransID);
+  };
+
+
+  // SUB-COMPONENTS
   const displayText =
     transactions.length === 0 ? (
       <div className={classes.displayText}>
@@ -100,10 +127,29 @@ const TransactionRecords = () => {
       ""
     );
 
-  const convertToDate = (dateTime) => {
-    return new Date(dateTime).toDateString()
-  }
-  
+    const itemsModalContainer = (
+      <div style={{ height: "100%"}}>
+        <Modal open={itemsModal} className={classes.modal} disableAutoFocus>
+          <Paper className={classes.modalContent}>
+            <ItemTransactions
+              openModal={openViewItems}
+              transactionID={selectedTransID}
+            />
+          </Paper>
+        </Modal>
+      </div>
+    );
+
+    const convertToDate = (timestamp) => {
+      const convertedTS = new Date(timestamp)
+      const dateTime = new Intl.DateTimeFormat(undefined, { dateStyle: "short", timeStyle: "short" }).format(convertedTS);
+      const [date, time] = dateTime.split(", ");
+      return {
+        date,
+        time,
+      };
+    };
+
   const main = (
     <Fragment>
       <Button
@@ -115,6 +161,7 @@ const TransactionRecords = () => {
         <Typography variant="subtitle2">BACK</Typography>
       </Button>
       <div className={classes.margin}>
+      {itemsModalContainer}
         <TableContainer
           component={Paper}
           elevation={0}
@@ -123,23 +170,40 @@ const TransactionRecords = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableHeader width={80}>Transaction ID</TableHeader>
+                <TableHeader width={50}>Transaction ID</TableHeader>
                 <TableHeader width={50}>Date</TableHeader>
+                <TableHeader width={50}>Time</TableHeader>
                 <TableHeader width={80}>Total</TableHeader>
                 <TableHeader width={100}>Incharge</TableHeader>
+                <TableHeader width={50}> </TableHeader>
+
               </TableRow>
             </TableHead>
              <TableBody>
-            {transactions.map((transaction, index) => (
+            {transactions.map((transaction, index) => {
+              const dateTime = convertToDate(transaction.transaction_date_time)
+              const date = dateTime.date;
+              const time = dateTime.time;
+
+             return (
               <TableRow key={index} hover>
                 <StyledTableCell>{transaction.transaction_id}</StyledTableCell>
-                <StyledTableCell>
-                  {convertToDate(transaction.transaction_date_time)}
-                </StyledTableCell>
+                <StyledTableCell>{date}</StyledTableCell>
+                <StyledTableCell>{time}</StyledTableCell>
                 <StyledTableCell>₱ {transaction.total}</StyledTableCell>
                 <StyledTableCell>{`${transaction.fname} ${transaction.lname}`}</StyledTableCell>
+                <StyledTableCell align="center">
+                <Button
+                  variant="contained"
+                  disableElevation
+                  className={classes.actionBtn}
+                  onClick={() => openViewItems(transaction.transaction_id)}
+                >
+                  View Items
+                </Button>
+          </StyledTableCell>
               </TableRow>
-            ))}
+            )})}
             </TableBody>
           </Table>
           {displayText}
