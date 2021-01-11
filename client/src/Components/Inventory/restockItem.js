@@ -8,7 +8,6 @@ import {
 import theme from "../../Theme/index";
 import ajax from "../../Utils/facade";
 import { useAuth } from "../Subcomponents/auth";
-// import ajax from "../../Utils/facade";
 
 const styles = (theme) => ({
   textField: {

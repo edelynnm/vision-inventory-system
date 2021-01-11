@@ -38,7 +38,7 @@ const Reports = () => {
   }
   
   const displayText =
-    items.entries === undefined ? (
+    Object.entries(items).length === 0 ? (
     <div styles={{padding: 200, width: "100",}}>
       <Typography align="center">Nothing to display</Typography>
     </div>
@@ -48,27 +48,18 @@ const Reports = () => {
 
   const main = (
     <Fragment>
-      <div
-        style={{
-          height: 100,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginRight: 60,
-        }}
-      >
+      <div>
         <Typography
           align="left"
           variant="h5"
           color="primary"
-          style={{ fontWeight: 700 }}
+          style={{ fontWeight: 700, marginBottom: 20 }}
         >
           Sales Report
         </Typography>
       </div>
       {displayText}
-
-        {getTable(items)}
+      {getTable(items)}
     </Fragment>
   );
 

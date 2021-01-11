@@ -19,10 +19,15 @@ import PageTemplate from "../Subcomponents/uiTemplates/pageTemplate";
 import { Redirect } from "react-router-dom";
 
 const styles = (theme) => ({
+  margin: {
+    margin: "0 60px 60px 0",
+  },
   tableContainer: {
     border: `2px solid ${theme.palette.divider}`,
     backgroundColor: "white",
-    maxHeight: 600
+    maxHeight: 700,
+    marginTop: 20,
+
   },
   chevron: {
     fontSize: "30pt",
@@ -101,9 +106,10 @@ const RestockRecords = () => {
         <div className={classes.margin}>
         <Typography align="left"
           variant="h5"
-          color="primary" style={{ fontWeight: 700 }} gutterBottom>
+          color="primary" style={{ fontWeight: 700 }}>
           Restock Records
         </Typography>
+        <div className={classes.margin}>
         <TableContainer
           component={Paper}
           elevation={0}
@@ -143,6 +149,7 @@ const RestockRecords = () => {
           {displayText}
 
         </TableContainer>
+        </div>
       </div>
     </Fragment>
   );

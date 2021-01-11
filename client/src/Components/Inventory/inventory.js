@@ -227,7 +227,7 @@ const Inventory = (props) => {
     </div>
   );
 
-  const newItemBtn = (
+  const toolbarBtns = (
     <div>
       <Button
         disableElevation
@@ -258,7 +258,7 @@ const Inventory = (props) => {
   const toolbar = (
     <div className={classes.toolbar}>
       {searchBar}
-      {localForbiddenIDs.includes(auth.user.roleID) ? "" : newItemBtn}
+      {localForbiddenIDs.includes(auth.user.roleID) ? "" : toolbarBtns}
     </div>
   );
 
@@ -288,7 +288,7 @@ const Inventory = (props) => {
 
   const tableData = (items) =>
     items.map((item) => (
-      <TableRow key={item.item_code} hover>
+      <TableRow key={item.item_code} hover style={{backgroundColor: `${item.item_qty <= item.reorder_point ? "#fdecea": ""}`}}>
         <StyledTableCell>{item.item_code}</StyledTableCell>
         <StyledTableCell>{`${item.item_brand} ${item.item_specs}`}</StyledTableCell>
         <StyledTableCell>{item.item_unit}</StyledTableCell>

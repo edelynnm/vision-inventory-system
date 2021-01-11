@@ -43,7 +43,7 @@ const useStyle = makeStyles(styles);
 const TableData = (props) => {
   const classes = useStyle(theme);
   
-  const convertToDate = (timestamp) => {
+  const convertToDate = (timestamp,) => {
     const options = {
       year: "numeric",
       month: "long",
@@ -55,7 +55,7 @@ const TableData = (props) => {
 
   return (
     <div className={classes.margin}>
-      <Typography style={{ fontWeight: 700 }} gutterBottom>
+      <Typography variant={"h6"} color="secondary" style={{ fontWeight: 700 }} gutterBottom>
         {convertToDate(props.date)}
       </Typography>
       <TableContainer

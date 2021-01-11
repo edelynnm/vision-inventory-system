@@ -51,11 +51,11 @@ const Dashboard = () => {
       >
         Inventory Notifications
       </Typography>
-      <Alert open variant="filled" severity={restockItems.length === 0 ? "success" : "error"}>
+      <Alert elevation={1} open severity={restockItems.length === 0 ? "success" : "error"} style={{border: `1px solid ${restockItems.length === 0 ? "#5cb65f" : "#f67065"}`}}>
         {restockItems.length !== 0 ? (
           <div>
             <Typography style={{ fontWeight: 700 }} gutterBottom>
-              RESTOCK:{" "}
+              RESTOCK:
             </Typography>
             {restockItems.map((item, index) => (
               <div>
@@ -74,7 +74,7 @@ const Dashboard = () => {
             ))}
           </div>
         ) : (
-          <Typography>"Nothing to show."</Typography>
+          <Typography>Nothing to show.</Typography>
         )}
       </Alert>
     </div>
