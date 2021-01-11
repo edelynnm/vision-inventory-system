@@ -23,6 +23,8 @@ import ajax from "../../Utils/facade";
 import AddNewItem from "./addNewItem";
 import RestockItem from "./restockItem";
 import { useAuth } from "../Subcomponents/auth";
+import { Redirect } from "react-router-dom";
+import clsx from "clsx";
 
 const styles = (theme) => ({
   margin: {
@@ -44,6 +46,10 @@ const styles = (theme) => ({
     padding: 200,
     width: "100",
   },
+  actionBtn: {
+    padding: "15px 15px 15px 10px",
+    marginLeft: 20,
+  },
   restockBtn: {
     fontWeight: 700,
     backgroundColor: "#fa5d1e",
@@ -54,9 +60,7 @@ const styles = (theme) => ({
     },
   },
   newBtn: {
-    padding: "15px 15px 15px 10px",
     fontWeight: 700,
-    marginLeft: 20,
     border: `1px solid ${theme.palette.primary.dark}`,
   },
   modal: {
@@ -111,7 +115,8 @@ const Inventory = (props) => {
   const [restockModal, setRestockModal] = useState(false);
   const [status, setStatus] = useState({ success: false, message: "" });
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  
+  const [openRecords, setOpenRecords] = useState(false);
+
   useEffect(() => {
     getItems();
     const interval = setInterval(() => {
@@ -135,11 +140,12 @@ const Inventory = (props) => {
   };
 
   const searchItem = (items) => {
-    const results = items.filter((item) =>
-      item.item_desc.toUpperCase().includes(searchWord.toUpperCase())
+    const results = items.filter((item) => {
+      const itemProp = `${item.item_code} ${item.item_brand} ${item.item_specs}`;
+      return itemProp.toUpperCase().includes(searchWord.toUpperCase())
         ? item
-        : ""
-    );
+        : "";
+    });
     setMatchItems(results);
   };
 
@@ -189,15 +195,18 @@ const Inventory = (props) => {
     </div>
   );
 
-  const displayText = !matchItems && !searchWord ? (
-    <div className={classes.displayText}>
-      <Typography align="center">No Match Found</Typography>
-    </div>
-  ) : items.length === 0 ? (
-    <div className={classes.displayText}>
-      <Typography align="center">No Items</Typography>
-    </div>
-  ) : "";
+  const displayText =
+    !matchItems && !searchWord ? (
+      <div className={classes.displayText}>
+        <Typography align="center">No Match Found</Typography>
+      </div>
+    ) : items.length === 0 ? (
+      <div className={classes.displayText}>
+        <Typography align="center">No Items</Typography>
+      </div>
+    ) : (
+      ""
+    );
 
   const searchBar = (
     <div>
@@ -219,16 +228,31 @@ const Inventory = (props) => {
   );
 
   const newItemBtn = (
-    <Button
-      disableElevation
-      variant="contained"
-      color="primary"
-      className={classes.newBtn}
-      onClick={openNewItemModal}
-    >
-      <AddRounded style={{ marginRight: 5 }} />
-      New Item
-    </Button>
+    <div>
+      <Button
+        disableElevation
+        variant="contained"
+        color="primary"
+        className={clsx(classes.newBtn, classes.actionBtn)}
+        onClick={openNewItemModal}
+      >
+        <AddRounded style={{ marginRight: 5 }} />
+        New Item
+      </Button>
+      {localForbiddenIDs.includes(auth.user.roleID) ? (
+        ""
+      ) : (
+        <Button
+          disableElevation
+          variant="contained"
+          color="secondary"
+          className={clsx(classes.restockBtn, classes.actionBtn)}
+          onClick={() => setOpenRecords(true)}
+        >
+          Restock Records
+        </Button>
+      )}
+    </div>
   );
 
   const toolbar = (
@@ -335,6 +359,9 @@ const Inventory = (props) => {
     </div>
   );
 
+  if (openRecords) {
+    return <Redirect to="/inventory/restock-records" />;
+  }
   return (
     <Fragment>
       <PageTemplate component={inventory} />
