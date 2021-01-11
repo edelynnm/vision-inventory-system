@@ -245,6 +245,13 @@ CREATE INDEX item_transactions_id_fkey ON public.item_transactions USING btree (
 
 
 --
+-- Name: item_transactions_item_code_fkey; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX item_transactions_item_code_fkey ON public.item_transactions USING btree (item_code);
+
+
+--
 -- Name: items_business_id_fkey; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -291,6 +298,14 @@ CREATE INDEX user_business_id_fkey ON public.users USING btree (user_business_id
 --
 
 CREATE INDEX user_role_id_fkey ON public.users USING btree (user_role_id);
+
+
+--
+-- Name: item_transactions item_transactions_item_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item_transactions
+    ADD CONSTRAINT item_transactions_item_code_fkey FOREIGN KEY (item_code) REFERENCES public.items(item_code);
 
 
 --
@@ -375,6 +390,4 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20210105165941'),
     ('20210105170211'),
     ('20210105170613'),
-    ('20210105191516'),
-    ('20210110104845'),
-    ('20210110105023');
+    ('20210105191516');
