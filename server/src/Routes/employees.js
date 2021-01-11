@@ -11,7 +11,12 @@ router
   .use(authenticateRole([1]))
   .get("/", async (req, res) => {
     try {
-      const { rows } = await pgClient.query("SELECT U.fname, U.lname, U.email, R.role_title FROM users AS U INNER JOIN roles AS R ON U.user_role_id = R.role_id;");
+      const { rows } = await pgClient.query(`
+      SELECT U.fname, U.lname, U.email, R.role_title, U.is_verified
+      FROM users AS U
+      INNER JOIN roles AS R ON U.user_role_id = R.role_id
+      WHERE U.user_business_id = $1 AND U.user_role_id != 1
+      ;`, [req.user.user_business_id]);
       return res.json(rows);
     } catch (error) {
       console.log(error);
@@ -20,7 +25,7 @@ router
   })
   .get("/roles", async (req, res) => {
     try {
-      const { rows } = await pgClient.query("SELECT * FROM roles");
+      const { rows } = await pgClient.query("SELECT * FROM roles WHERE role_title != 'ADMIN'");
       return res.json(rows);
     } catch (error) {
       console.log(error);
@@ -36,6 +41,7 @@ router
         fname,
         lname,
       } = req.body;
+      const businessID = req.user.user_business_id;
 
       const users = await pgClient.query(
         "SELECT email FROM users WHERE email = $1;",
@@ -56,7 +62,7 @@ router
         `INSERT INTO users
         (user_business_id, user_role_id, email, password, fname, lname, verification_token)
         VALUES ($1, $2, $3, $4, $5, $6, $7);`,
-        [req.user.user_business_id, userRoleId, email, hashedPassword, fname, lname, verificationToken],
+        [businessID, userRoleId, email, hashedPassword, fname, lname, verificationToken],
       );
       const invMsg = `
       <p>Hello ${fname}!

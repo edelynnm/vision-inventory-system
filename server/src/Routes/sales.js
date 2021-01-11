@@ -62,6 +62,7 @@ router
       return res.sendStatus(500);
     }
   })
+  // fetch items bought
   .get("/new-transaction/:id/items", async (req, res) => {
     try {
       const transactionID = req.params.id;
@@ -73,23 +74,6 @@ router
         WHERE T.transaction_id = $1;
       `, [transactionID]);
       return res.json(rows);
-    } catch (error) {
-      console.log(error);
-      return res.sendStatus(500);
-    }
-  })
-  .get("/get-total/:id", async (req, res) => {
-    try {
-      const transactionID = req.params.id;
-      const { rows } = await pgClient.query(
-        `SELECT COALESCE(SUM(total_price), 0) AS total FROM (SELECT * FROM item_transactions
-        WHERE transaction_id = $1
-        ORDER BY item_code ASC) AS transaction;`,
-        [transactionID],
-      );
-
-      const { total } = rows[0];
-      return res.json(total);
     } catch (error) {
       console.log(error);
       return res.sendStatus(500);
@@ -152,8 +136,11 @@ router
     try {
       const { rows } = await pgClient.query(`
         SELECT T.transaction_id, T.transaction_date_time, T.total, U.fname, U.lname
-        FROM transactions AS T INNER JOIN users AS U ON U.user_id = T.transaction_user_id;
-      `);
+        FROM transactions AS T
+        INNER JOIN users AS U ON U.user_id = T.transaction_user_id
+        WHERE U.user_business_id = $1
+        ORDER BY T.transaction_date_time DESC;
+      `, [req.user.user_business_id]);
       return res.json(rows);
     } catch (error) {
       console.log(error);
