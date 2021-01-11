@@ -17,6 +17,7 @@ import Reports from "./Components/Reports/reports";
 import Employees from "./Components/Employees/employees";
 import RegisterEmployees from "./Components/Employees/registerEmp";
 import EmployeeRecords from "./Components/Employees/employeeRecords";
+import RestockRecords from "./Components/Inventory/restockRecords";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route exact path="/auth/signup/emp" component={EmpSignup} />
             <PrivateRoute exact path="/dashboard" component={Dashboard} />
             <PrivateRoute exact path="/inventory" component={Inventory} />
+            <PrivateRoute exact path="/inventory/restock-records" component={RestockRecords} />
             <PrivateRoute exact path="/sales" component={Sales} />
             <PrivateRoute exact path="/reports" component={Reports} />
             <PrivateRoute exact path="/employees" component={Employees} />
