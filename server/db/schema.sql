@@ -61,6 +61,8 @@ CREATE TABLE public.items (
     item_unit_price numeric NOT NULL,
     item_unit text NOT NULL,
     reorder_point integer NOT NULL,
+    business_id integer NOT NULL,
+    date_time timestamp without time zone DEFAULT now(),
     CONSTRAINT items_item_qty_check CHECK ((item_qty >= 0))
 );
 
@@ -144,7 +146,7 @@ CREATE TABLE public.transactions (
     transaction_id bigint NOT NULL,
     transaction_user_id integer NOT NULL,
     transaction_date_time timestamp without time zone DEFAULT now(),
-    transaction_payment numeric NOT NULL
+    total numeric NOT NULL
 );
 
 
@@ -243,6 +245,13 @@ CREATE INDEX item_transactions_id_fkey ON public.item_transactions USING btree (
 
 
 --
+-- Name: items_business_id_fkey; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX items_business_id_fkey ON public.items USING btree (business_id);
+
+
+--
 -- Name: restock_item_code_fkey; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -290,6 +299,14 @@ CREATE INDEX user_role_id_fkey ON public.users USING btree (user_role_id);
 
 ALTER TABLE ONLY public.item_transactions
     ADD CONSTRAINT item_transactions_transaction_id_fkey FOREIGN KEY (transaction_id) REFERENCES public.transaction_records(transaction_id);
+
+
+--
+-- Name: items items_business_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_business_id_fkey FOREIGN KEY (business_id) REFERENCES public.businesses(business_id);
 
 
 --
@@ -358,4 +375,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20210105165941'),
     ('20210105170211'),
     ('20210105170613'),
-    ('20210105191516');
+    ('20210105191516'),
+    ('20210110104845'),
+    ('20210110105023');
