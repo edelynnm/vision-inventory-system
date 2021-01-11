@@ -6,7 +6,7 @@ import ajax from "../../Utils/facade";
 import AuthTemplate from "../Subcomponents/uiTemplates/authTemplate";
 import { makeStyles } from "@material-ui/core/styles";
 import theme from "../../Theme/index";
-import parseQS from "../../Utils/parseQS";
+import parseQs from "../../Utils/parseQS";
 
 const styles = (theme) => ({
   rightScreenStyle: {
@@ -44,11 +44,6 @@ const VerifyEmail = (props) => {
     verifyEmail();
     getType()
   }, []);
-
-  console.log('msg',verificationMsg);
-  console.log("isVerified", isVerified);
-  console.log('type',type)
-  console.log(type)
   
   const handleResponse = (body) => {
     if (body.success) {
@@ -68,7 +63,7 @@ const VerifyEmail = (props) => {
   };
 
   const getType = () => {
-    const type = parseQS(url, "type")
+    const type = parseQs(url, "type")
     setType(type)
   }
 

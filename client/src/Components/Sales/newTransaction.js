@@ -1,6 +1,5 @@
 import { Fragment, useState, useEffect } from "react";
 import {
-  Grid,
   Table,
   TextField,
   Button,
@@ -13,18 +12,17 @@ import {
   TableHead,
   TableRow,
   Box,
-  Modal,
-  Snackbar,
+  Modal
 } from "@material-ui/core";
 import { ChevronLeftRounded } from "@material-ui/icons";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Payment from "./payment";
-import theme from "../../Theme/index";
 import { useAuth } from "../Subcomponents/auth";
-import ajax from "../../Utils/facade";
-import clsx from "clsx";
 import { Redirect } from "react-router-dom";
-import { Alert } from "@material-ui/lab";
+import clsx from "clsx";
+import theme from "../../Theme/index";
+import ajax from "../../Utils/facade";
+import Payment from "./payment";
+import getTotal from "../../Utils/getTotal";
 
 const styles = (theme) => ({
   textFieldMargin: {
@@ -133,19 +131,19 @@ const NewTransaction = (props) => {
   const [paymentModal, setPaymentModal] = useState(false);
   const [returnStatus, setReturnStatus] = useState(false);
   const [successStatus, setSuccessStatus] = useState(false);
-  const [status, setStatus] = useState({
-    success: false,
-    message: ""
+  const [error, setError] = useState({
+    status: false,
+    errorMsg: ""
   });
-  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
-    fetchItem();
     generateID();
   }, []);
 
   useEffect(() => {
+    fetchItem()
     fetchItemsBought();
+    setError({status: false, errorMsg: ""})
   }, [addedItem]);
 
   useEffect(() => {
@@ -236,20 +234,12 @@ const NewTransaction = (props) => {
 
   const findItem = (e) => {
     const matchItem = items.find((item) => item.item_code === e.target.value);
-    if (!matchItem) {
-      console.log("no item found"); //snackbox
-    } else {
+    if (!matchItem && inputItem.code !== "") {
+      setError({status: true, errorMsg: "No item found"})
+    } 
+    if (matchItem) {
       setMatchItem(matchItem);
     }
-  };
-
-  const getTotalPrice = () => {
-    let totalPrice = 0;
-    if (itemsBought.length !== 0) {
-      const prices = itemsBought.map((item) => Number(item.total_price) * Number(item.qty));
-      totalPrice = prices.reduce((acc, val) => acc + val);
-    }
-    return totalPrice.toFixed(2);
   };
 
   const handleChange = (e) => {
@@ -263,32 +253,6 @@ const NewTransaction = (props) => {
   const checkStatus = () => {
     setSuccessStatus(!successStatus)
   }
-  const handleSnackbar = () => {
-    setOpenSnackbar(!openSnackbar);
-  };
-
-  const snackbar = (
-    <div>
-      <Snackbar
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        open={openSnackbar}
-        autoHideDuration={3000}
-        onClose={handleSnackbar}
-      >
-        <Alert
-          elevation={0}
-          variant="filled"
-          onClose={handleSnackbar}
-          severity={status.success ? "success" : "error"}
-        >
-          {status.message}
-        </Alert>
-      </Snackbar>
-    </div>
-  );
 
   const disabledTextFields = [
     {
@@ -320,16 +284,18 @@ const NewTransaction = (props) => {
       value: matchItem.item_qty,
     },
   ];
+
+  // SUBCOMPONENTS
+  
   const paymentModalContainer = (
     <div>
       <Modal open={paymentModal} className={classes.modal} disableAutoFocus>
         <Paper className={classes.modalContent} style={{ height: 200 }}>
           <Payment
             transactionID={newTransactionID}
-            total={getTotalPrice()}
+            total={getTotal(itemsBought)}
             openModal={openPaymentModal}
             status={checkStatus}
-            // openSnackbar={showMessage}
           />
         </Paper>
       </Modal>
@@ -341,6 +307,8 @@ const NewTransaction = (props) => {
       <Box display="flex" flexDirection="column" flexwrap="wrap">
         <form onSubmit={onSubmitForm}>
           <TextField
+            error={error.status}
+            helperText={error.errorMsg}
             key="inputItemCode"
             required
             variant="outlined"
@@ -456,7 +424,7 @@ const NewTransaction = (props) => {
               <StyledTableCell align="right" colSpan={5}>
                 Total
               </StyledTableCell>
-              <StyledTableCell colSpan={5}>₱ {getTotalPrice()}</StyledTableCell>
+              <StyledTableCell colSpan={5}>₱ {getTotal(itemsBought)}</StyledTableCell>
             </TableRow>
           </TableBody>
         </Table>

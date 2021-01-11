@@ -21,7 +21,7 @@ const useProvideAuth = () => {
     const fetchUser = () => {
       const token = localStorage.getItem("token");
       setToken(token);
-
+      
       if (token) {
         getUser(token);
       }

@@ -189,33 +189,22 @@ const Login = () => {
           </Button>
         </Box>
       </form>
-      <Box display="flex" justifyContent="space-between">
-        <Link href="/forgot-password" color="secondary">
+      <Typography
+        color="primary"
+        style={{ textAlign: "left" }}
+        className={classes.subText}
+      >
+        Don't have an account yet?&nbsp;
+        <Link href="/auth/signup" color="secondary">
           <Typography
+            component="span"
             color="secondary"
-            style={{ textAlign: "left" }}
             className={classes.subText}
           >
-            Forgot Password?
+            Sign Up.
           </Typography>
         </Link>
-        <Typography
-          color="primary"
-          style={{ textAlign: "right" }}
-          className={classes.subText}
-        >
-          Don't have an account yet?&nbsp;
-          <Link href="/auth/signup" color="secondary">
-            <Typography
-              component="span"
-              color="secondary"
-              className={classes.subText}
-            >
-              Sign Up.
-            </Typography>
-          </Link>
-        </Typography>
-      </Box>
+      </Typography>
     </div>
   );
 

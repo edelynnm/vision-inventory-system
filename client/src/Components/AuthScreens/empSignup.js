@@ -1,9 +1,8 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   TextField,
   Button,
-  Snackbar,
   Typography,
   Box,
   InputAdornment,
@@ -13,13 +12,10 @@ import {
 import {
   Visibility,
   VisibilityOff,
-  ChevronLeftRounded,
-  SettingsCellOutlined,
 } from "@material-ui/icons";
 import theme from "../../Theme/index";
-import { Link, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import ajax from "../../Utils/facade";
-import { Alert } from "@material-ui/lab";
 
 const styles = (theme) => ({
   rightScreenStyle: {
@@ -51,8 +47,6 @@ const EmpSignup = (props) => {
   const [status, setStatus] = useState({ success: false, message: null });
   const [password, setPassword] = useState("");
   const [pswdVisibility, setPswdVisibility] = useState(false);
-  const [count, setCount] = useState(5);
-
 
   const handleClickShowPassword = (e) => {
     setPswdVisibility(!pswdVisibility);

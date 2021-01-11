@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Typography,
@@ -9,7 +9,6 @@ import {
 import theme from "../../Theme/index";
 import ajax from "../../Utils/facade";
 import { useAuth } from "../Subcomponents/auth";
-import { Redirect } from "react-router-dom";
 
 const styles = (theme) => ({
   textField: {
@@ -35,15 +34,6 @@ const styles = (theme) => ({
       backgroundColor: theme.palette.error.dark,
     },
   },
-  modal: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    width: 300,
-    padding: "40px 50px 50px 50px",
-  },
 });
 
 const useStyle = makeStyles(styles);
@@ -52,26 +42,6 @@ const Payment = (props) => {
   const classes = useStyle(theme);
   const auth = useAuth();
   const [payment, setPayment] = useState("");
-  // const [total, setTotal] = useState();
-
-  const [change, setChange] = useState();
-  const [newTransaction, setNewTransaction] = useState(true);
-
-  // useEffect(() => {
-  //   ajax.GET({
-  //     url: `http://localhost:8000/api/sales/get-total/${props.transactionID}`,
-  //     authToken: auth.token,
-  //     callback: setTotal
-  //   })
-  // }, [])
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (!newTransaction) {
-  //       props.total = 0;
-  //     }
-  //   };
-  // }, [newTransaction]);
 
   // save additional item qty
   const sendPayment = (e) => {
@@ -91,19 +61,13 @@ const Payment = (props) => {
 
   const handleResponse = (body) => {
     if (body.success) {
-      setChange(body.change);
       alert(`Your change: ${body.change}`);
       props.openModal();
       props.status();
     }
-
-    // props.openSnackbar(body);
   };
 
-
   return (
-  //   <Redirect to="/sales" />
-  // ) : (
     <Fragment>
       <div>
         <Typography

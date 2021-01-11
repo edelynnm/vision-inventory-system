@@ -51,15 +51,11 @@ const Signup = () => {
     lname: "",
     email: "",
     password: "",
-    confirmPassword: "",
     businessName: "",
   });
   const [formStatus, setFormStatus] = useState({ status: false, message: "" });
 
-  const [pswdVisibility, setPswdVisibility] = useState({
-    showPassword: false,
-    showConfirmPassword: false,
-  });
+  const [pswdVisibility, setPswdVisibility] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleCloseSnackbar = () => {
@@ -67,10 +63,7 @@ const Signup = () => {
   };
 
   const handleClickShowPassword = () => {
-    setPswdVisibility({
-      ...pswdVisibility,
-      showPassword: !pswdVisibility.showPassword,
-    });
+    setPswdVisibility(!pswdVisibility);
   };
 
   const handleChange = (e) => {
@@ -164,7 +157,7 @@ const Signup = () => {
             required
             id="password"
             label="Password"
-            type={pswdVisibility.showPassword ? "text" : "password"}
+            type={pswdVisibility ? "text" : "password"}
             name="password"
             value={values.password}
             autoComplete="new-password"
@@ -173,7 +166,7 @@ const Signup = () => {
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton onClick={handleClickShowPassword}>
-                    {pswdVisibility.showPassword ? (
+                    {pswdVisibility ? (
                       <Visibility />
                     ) : (
                       <VisibilityOff />

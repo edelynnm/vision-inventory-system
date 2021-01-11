@@ -89,7 +89,7 @@ const EmployeeRecords = () => {
     setReturnStatus(true);
   };
 
-  //SUBCOMPONENT
+  // SUB-COMPONENTS
   const displayText =
     employees.length === 0 ? (
       <div className={classes.displayText}>
@@ -122,6 +122,7 @@ const EmployeeRecords = () => {
                 <TableHeader width={100}>Last Name</TableHeader>
                 <TableHeader width={100}>Email</TableHeader>
                 <TableHeader width={50}>Role</TableHeader>
+                <TableHeader width={50}>Status</TableHeader>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -131,6 +132,7 @@ const EmployeeRecords = () => {
                   <StyledTableCell>{emp.lname}</StyledTableCell>
                   <StyledTableCell>{emp.email}</StyledTableCell>
                   <StyledTableCell>{emp.role_title}</StyledTableCell>
+                  <StyledTableCell>{emp.is_verified ? "Registered" : "Pending" }</StyledTableCell>
                 </TableRow>
               ))}
             </TableBody>
