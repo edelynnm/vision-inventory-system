@@ -3,8 +3,8 @@ import { Typography} from "@material-ui/core";
 import PageTemplate from "../Subcomponents/uiTemplates/pageTemplate";
 import ajax from "../../Utils/facade";
 import { useAuth } from "../Subcomponents/auth";
-import groupByDate from "../../Utils/groupBy";
-import TableData from "./tableData.";
+import TableData from "./tableData";
+import {groupDaily, groupMonthly} from "../../Utils/groupBy";
 
 
 const Reports = () => {
@@ -17,7 +17,7 @@ const Reports = () => {
 
 
   const handleChange = (body) => { 
-    setItems(groupByDate(body));
+    setItems(groupDaily(body));
   };
 
   const fetchItems = () => {

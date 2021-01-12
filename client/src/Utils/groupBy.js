@@ -1,20 +1,17 @@
-const groupBy = (prop, array) => {
+import * as R from "ramda";
 
-  const results = array.reduce((acc, val) => {
-    const key = val[prop];
-    
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(val)
-    return acc;
-  }, {});
+const groupByDate = (isDaily) => R.groupBy((items) => {
+  let options = {
+    year:"numeric",
+    month: "long",
+  }
 
-  return results;
-};
+  if (isDaily) {
+    options["day"] = "numeric"
+  }
 
-const groupByDate = (array) => {
-  return groupBy("date", array);
-};
+ return new Date(items.date).toLocaleString(undefined, options)});
 
-export default groupByDate;
+const groupDaily = (items) => groupByDate(true)(items)
+
+export { groupDaily };

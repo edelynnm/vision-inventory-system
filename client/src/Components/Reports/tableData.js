@@ -42,21 +42,11 @@ const useStyle = makeStyles(styles);
   
 const TableData = (props) => {
   const classes = useStyle(theme);
-  
-  const convertToDate = (timestamp,) => {
-    const options = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }
-    const date = new Date(timestamp).toLocaleString(undefined, options);
-    return date
-  }
 
   return (
     <div className={classes.margin}>
       <Typography variant={"h6"} color="secondary" style={{ fontWeight: 700 }} gutterBottom>
-        {convertToDate(props.date)}
+        {props.date}
       </Typography>
       <TableContainer
         component={Paper}
@@ -65,7 +55,7 @@ const TableData = (props) => {
       >
         <Table stickyHeader>
           <TableHead>
-            <TableRow key={convertToDate(props.date)}>
+            <TableRow key={props.date}>
               <TableHeader width={120}>Item Code</TableHeader>
               <TableHeader width={200}>Description</TableHeader>
               <TableHeader width={80}>Unit</TableHeader>
