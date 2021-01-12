@@ -239,9 +239,6 @@ const Inventory = (props) => {
         <AddRounded style={{ marginRight: 5 }} />
         New Item
       </Button>
-      {localForbiddenIDs.includes(auth.user.roleID) ? (
-        ""
-      ) : (
         <Button
           disableElevation
           variant="contained"
@@ -251,7 +248,6 @@ const Inventory = (props) => {
         >
           Restock Records
         </Button>
-      )}
     </div>
   );
 
