@@ -8,7 +8,7 @@ router
   // Display all items
   .get("/", async (req, res) => {
     try {
-      const { rows } = await pgClient.query("SELECT * FROM items WHERE business_id = $1 ORDER BY date_time DESC;", [req.user.user_business_id]);
+      const { rows } = await pgClient.query(`SELECT * FROM business_${req.user.business_id}.items ORDER BY date_time DESC;`);
 
       return res.json(rows);
     } catch (error) {
@@ -30,12 +30,10 @@ router
       } = req.body;
 
       const query = {
-        text: `INSERT INTO items
-           (business_id, item_code, item_brand, item_specs, item_qty,
-           item_unit_price, item_unit, reorder_point)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
+        text: `INSERT INTO business_${req.user.business_id}.items
+           (code, brand, specs, qty, unit_price, unit, reorder_point)
+           VALUES ($1, $2, $3, $4, $5, $6, $7);`,
         values: [
-          req.user.user_business_id,
           itemCode,
           itemBrand,
           itemSpecs,
@@ -47,9 +45,8 @@ router
       };
 
       // new item validation
-      const { rows } = await pgClient.query("SELECT * FROM items WHERE item_code = $1", [
-        itemCode,
-      ]);
+      const { rows } = await pgClient.query(`SELECT * FROM business_${req.user.business_id}.items WHERE code = $1`,
+        [itemCode]);
 
       if (rows.length !== 0) {
         return res.json({ success: false, message: "Item already exists." });
@@ -68,19 +65,20 @@ router
   .post("/restock", async (req, res) => {
     try {
       const { itemQty, itemCode } = req.body;
+      const businessID = req.user.business_id;
 
       // item validation
-      const { rows } = await pgClient.query("SELECT * FROM items WHERE item_code = $1", [itemCode]);
+      const { rows } = await pgClient.query(`SELECT * FROM business_${businessID}.items WHERE code = $1`, [itemCode]);
 
       if (rows.length === 0) {
         return res.json({ success: false, message: "Item does not exist." });
       }
 
-      await pgClient.query("UPDATE items SET item_qty = item_qty + $1 WHERE item_code = $2;",
+      await pgClient.query(`UPDATE business_${businessID}.items SET qty = qty + $1 WHERE code = $2;`,
         [itemQty, itemCode]);
 
-      await pgClient.query("INSERT INTO restock_records (additional_qty, item_code, user_id) VALUES ($1, $2, $3);",
-        [itemQty, itemCode, req.user.user_id]);
+      await pgClient.query(`INSERT INTO business_${businessID}.restock_records (additional_qty, item_code, user_id) VALUES ($1, $2, $3);`,
+        [itemQty, itemCode, req.user.id]);
 
       return res.json({
         success: true,
@@ -93,10 +91,14 @@ router
   })
   .get("/restock-records", async (req, res) => {
     try {
-      const { rows } = await pgClient.query(`SELECT R.item_code, R.additional_qty, R.restock_date_time, U.fname, U.lname, I.item_brand, I.item_specs, I.item_unit FROM restock_records AS R
-      INNER JOIN items AS I ON I.item_code = R.item_code
-      INNER JOIN users AS U ON U.user_id = R.user_id
-      WHERE U.user_business_id = $1;`, [req.user.user_business_id]);
+      const businessID = req.user.business_id;
+      const { rows } = await pgClient.query(`
+      SELECT R.item_code as code, R.additional_qty, R.restock_date_time, U.fname, U.lname, I.brand, I.specs, I.unit
+      FROM business_${businessID}.restock_records AS R
+      INNER JOIN business_${businessID}.items AS I ON I.code = R.item_code
+      INNER JOIN users AS U ON U.id = R.user_id
+      ORDER BY R.restock_date_time DESC
+      ;`);
 
       return res.json(rows);
     } catch (error) {

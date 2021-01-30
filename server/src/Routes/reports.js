@@ -8,17 +8,16 @@ router
   .use(authenticateRole([1]))
   .get("/", async (req, res) => {
     try {
+      const businessID = req.user.business_id;
       const { rows } = await pgClient.query(
         `
-        SELECT T.item_code, SUM(T.qty) sold, I.item_brand, I.item_specs, I.item_unit_price, I.item_unit, DATE(R.transaction_date_time)                               
-        FROM item_transactions AS T
-        INNER JOIN items AS I ON T.item_code = I.item_code
-        INNER JOIN transactions AS R ON R.transaction_id = T.transaction_id
-        INNER JOIN users AS U ON U.user_id = R.transaction_user_id
-        WHERE U.user_business_id = $1
-        GROUP BY T.item_code, I.item_brand, I.item_specs, I.item_unit_price, I.item_unit, date;
+        SELECT IT.item_code, SUM(IT.qty) sold, I.brand, I.specs, I.unit_price, I.unit, DATE(T.date_time)                               
+        FROM business_${businessID}.item_transactions AS IT
+        INNER JOIN business_${businessID}.items AS I ON IT.item_code = I.code
+        INNER JOIN business_${businessID}.transactions AS T ON T.id = IT.transaction_id
+        INNER JOIN users AS U ON U.id = T.user_id
+        GROUP BY IT.item_code, I.brand, I.specs, I.unit_price, I.unit, date;
         `,
-        [req.user.user_business_id],
       );
       return res.json(rows);
     } catch (error) {

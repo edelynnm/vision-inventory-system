@@ -9,22 +9,21 @@ router
   // add items to transaction
   .post("/new-transaction/:id/add", async (req, res) => {
     try {
+      const businessID = req.user.business_id;
       const { code, qty } = req.body;
       const transactionID = req.params.id;
 
-      const {
-        rows: transactions,
-      } = await pgClient.query(
-        "SELECT transaction_id FROM transaction_records WHERE transaction_id = $1;",
+      const { rows: transactions } = await pgClient.query(
+        `SELECT id FROM business_${businessID}.transactions WHERE id = $1;`,
         [transactionID],
       );
 
-      // create if does not exists
+      // // create if does not exists
       if (transactions.length === 0) {
-        await pgClient.query("INSERT INTO transaction_records VALUES ($1);", [transactionID]);
+        await pgClient.query(`INSERT INTO business_${businessID}.transactions (id, user_id) VALUES ($1, $2)`, [transactionID, req.user.id]);
       }
 
-      const { rows } = await pgClient.query("SELECT * FROM items WHERE item_code = $1", [code]);
+      const { rows } = await pgClient.query(`SELECT * FROM business_${businessID}.items WHERE code = $1`, [code]);
       if (rows.length === 0) {
         return res.json({ message: "Item not found" });
       }
@@ -34,26 +33,26 @@ router
       }
 
       const { rows: items } = await pgClient.query(`
-        UPDATE items SET item_qty = item_qty - $1 WHERE item_code = $2 
-        RETURNING item_code, item_brand, item_specs, item_unit, item_unit_price;`,
+        UPDATE business_${businessID}.items SET qty = qty - $1 WHERE code = $2 
+        RETURNING brand, specs, unit, unit_price;`,
       [qty, code]);
 
       const item = items[0];
-      const itemName = `${item.item_brand} ${item.item_specs}`;
-      const total = item.item_unit_price * qty;
+      const itemName = `${item.brand} ${item.specs}`;
+      const total = item.unit_price * qty;
 
       await pgClient.query(
-        "INSERT INTO item_transactions (transaction_id, item_code, qty, total_price) VALUES ($1, $2, $3, $4);",
+        `INSERT INTO business_${businessID}.item_transactions (transaction_id, item_code, qty, total_price) VALUES ($1, $2, $3, $4);`,
         [transactionID, code, qty, total],
       );
 
       return res.json({
         success: true,
         message: "Added",
-        itemCode: item.item_code,
+        itemCode: item.code,
         itemName,
-        unit: item.item_unit,
-        unitPrice: item.item_unit_price,
+        unit: item.unit,
+        unitPrice: item.unit_price,
         qty,
         total,
       });
@@ -68,10 +67,12 @@ router
       const transactionID = req.params.id;
 
       const { rows } = await pgClient.query(`
-        SELECT T.item_code, I.item_brand, I.item_specs, I.item_unit, I.item_unit_price, T.qty, T.total_price 
-        FROM item_transactions AS T
-        INNER JOIN items AS I ON I.item_code = T.item_code
-        WHERE T.transaction_id = $1;
+        SELECT IT.item_code as code, I.brand, I.specs, I.unit, I.unit_price, IT.qty, IT.total_price 
+        FROM business_${req.user.business_id}.item_transactions AS IT
+        INNER JOIN business_${req.user.business_id}.items AS I ON I.code = IT.item_code
+        WHERE IT.transaction_id = $1
+        ORDER by IT.id ASC
+        ;
       `, [transactionID]);
       return res.json(rows);
     } catch (error) {
@@ -92,9 +93,9 @@ router
       const change = Number(payment) - Number(total);
 
       await pgClient.query(`
-        INSERT INTO transactions (transaction_id, transaction_user_id, total)
-        VALUES ($1, $2, $3);`,
-      [transactionID, req.user.user_id, total]);
+        UPDATE business_${req.user.business_id}.transactions
+        SET total = $1 WHERE id = $2`,
+      [total, transactionID]);
 
       return res.json({
         success: true,
@@ -109,20 +110,21 @@ router
   // cancel transaction
   .delete("/new-transaction/:id", async (req, res) => {
     try {
+      const businessID = req.user.business_id;
       const transactionID = req.params.id;
-      const { rows: returnItems } = await pgClient.query("SELECT item_code, qty from item_transactions WHERE transaction_id = $1", [transactionID]);
+      const { rows: returnItems } = await pgClient.query(`SELECT item_code, qty from business_${businessID}.item_transactions WHERE transaction_id = $1`, [transactionID]);
 
       let queries = "";
-      returnItems.forEach((item) => { queries += `UPDATE items SET item_qty = item_qty + ${item.qty} WHERE item_code = ${item.item_code};`; });
+      returnItems.forEach((returnItem) => { queries += `UPDATE business_${businessID}.items SET qty = qty + ${returnItem.qty} WHERE code = ${returnItem.item_code};`; });
 
       await pgClient.query(queries);
       await pgClient.query(
-        "DELETE FROM item_transactions WHERE transaction_id = $1;",
+        `DELETE FROM business_${businessID}.item_transactions WHERE transaction_id = $1;`,
         [transactionID],
       );
 
       await pgClient.query(
-        "DELETE FROM transaction_records WHERE transaction_id = $1;",
+        `DELETE FROM business_${businessID}.transactions WHERE id = $1;`,
         [transactionID],
       );
 
@@ -135,12 +137,10 @@ router
   .get("/transaction-records", async (req, res) => {
     try {
       const { rows } = await pgClient.query(`
-        SELECT T.transaction_id, T.transaction_date_time, T.total, U.fname, U.lname
-        FROM transactions AS T
-        INNER JOIN users AS U ON U.user_id = T.transaction_user_id
-        WHERE U.user_business_id = $1
-        ORDER BY T.transaction_date_time DESC;
-      `, [req.user.user_business_id]);
+        SELECT T.id, DATE(T.date_time), T.total, U.fname, U.lname
+        FROM business_${req.user.business_id}.transactions AS T
+        INNER JOIN users AS U ON U.id = T.user_id
+        ORDER BY date DESC;`);
       return res.json(rows);
     } catch (error) {
       console.log(error);

@@ -5,17 +5,15 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const {
-      rows,
-    } = await pgClient.query(
-      "SELECT business_name FROM businesses WHERE business_id = $1",
-      [req.user.user_business_id],
+    const { rows: businesses } = await pgClient.query(
+      "SELECT name FROM businesses WHERE id = $1",
+      [req.user.business_id],
     );
     return res.json({
       fname: req.user.fname,
       lname: req.user.lname,
-      roleID: req.user.user_role_id,
-      businessName: rows[0].business_name,
+      roleID: req.user.role_id,
+      businessName: businesses[0].name,
     });
   } catch (error) {
     console.log(error);
