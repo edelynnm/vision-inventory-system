@@ -1,5 +1,5 @@
 -- migrate:up
-INSERT INTO roles (role_title, role_desc)
+INSERT INTO roles (title, description)
   VALUES
   ('ADMIN', 'The boss/business owner.'),
   ('CASHIER', 'In-charge of the cash register and caters the customer''s purchases.'),
@@ -7,4 +7,4 @@ INSERT INTO roles (role_title, role_desc)
 ;
 
 -- migrate:down
-DELETE FROM roles WHERE role_title IN ('ADMIN', 'CASHIER', 'INVENTORY MANAGER');
+DELETE FROM roles WHERE title IN ('ADMIN', 'CASHIER', 'INVENTORY MANAGER');
