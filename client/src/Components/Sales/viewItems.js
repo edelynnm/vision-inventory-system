@@ -16,6 +16,7 @@ import ajax from "../../Utils/facade";
 import { useAuth } from "../Subcomponents/auth";
 import getTotal from "../../Utils/getTotal";
 import { CloseRounded } from "@material-ui/icons";
+import currencyFormatter from "../../Utils/currency.js"
 
 const styles = (theme) => ({
   tableContainer: {
@@ -132,15 +133,15 @@ const ItemTransactions = (props) => {
                 <StyledTableCell>{`${item.brand} ${item.specs}`}</StyledTableCell>
                 <StyledTableCell>{item.unit}</StyledTableCell>
                 <StyledTableCell>{item.qty}</StyledTableCell>
-                <StyledTableCell>₱ {item.unit_price}</StyledTableCell>
-                <StyledTableCell>₱ {item.total_price}</StyledTableCell>
+                <StyledTableCell>{currencyFormatter(item.unit_price)}</StyledTableCell>
+                <StyledTableCell>{currencyFormatter(item.total_price)}</StyledTableCell>
               </TableRow>
             ))}
             <TableRow>
               <StyledTableCell align="right" colSpan={5}>
                 Total
               </StyledTableCell>
-              <StyledTableCell colSpan={5}>₱ {getTotal(items)}</StyledTableCell>
+              <StyledTableCell colSpan={5}>{currencyFormatter(getTotal(items))}</StyledTableCell>
             </TableRow>
           </TableBody>
         </Table>

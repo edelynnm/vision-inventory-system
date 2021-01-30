@@ -19,6 +19,7 @@ import PageTemplate from "../Subcomponents/uiTemplates/pageTemplate";
 import ajax from "../../Utils/facade";
 import theme from "../../Theme";
 import ItemTransactions from "./viewItems";
+import currencyFormatter from "../../Utils/currency.js"
 
 const styles = (theme) => ({
   margin: {
@@ -129,7 +130,7 @@ const TransactionRecords = () => {
 
     const itemsModalContainer = (
       <div style={{ height: "100%"}}>
-        <Modal open={itemsModal} className={classes.modal} disableAutoFocus>
+        <Modal open={itemsModal} className={classes.modal} >
           <Paper className={classes.modalContent}>
             <ItemTransactions
               openModal={openViewItems}
@@ -181,23 +182,23 @@ const TransactionRecords = () => {
             </TableHead>
              <TableBody>
             {transactions.map((transaction, index) => {
-              const dateTime = convertToDate(transaction.transaction_date_time)
+              const dateTime = convertToDate(transaction.date)
               const date = dateTime.date;
               const time = dateTime.time;
 
              return (
               <TableRow key={index} hover>
-                <StyledTableCell>{transaction.transaction_id}</StyledTableCell>
+                <StyledTableCell>{transaction.id}</StyledTableCell>
                 <StyledTableCell>{date}</StyledTableCell>
                 <StyledTableCell>{time}</StyledTableCell>
-                <StyledTableCell>₱ {transaction.total}</StyledTableCell>
+                <StyledTableCell>{currencyFormatter(transaction.total)}</StyledTableCell>
                 <StyledTableCell>{`${transaction.fname} ${transaction.lname}`}</StyledTableCell>
                 <StyledTableCell align="center">
                 <Button
                   variant="contained"
                   disableElevation
                   className={classes.actionBtn}
-                  onClick={() => openViewItems(transaction.transaction_id)}
+                  onClick={() => openViewItems(transaction.id)}
                 >
                   View Items
                 </Button>

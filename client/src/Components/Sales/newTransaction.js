@@ -23,6 +23,7 @@ import theme from "../../Theme/index";
 import ajax from "../../Utils/facade";
 import Payment from "./payment";
 import getTotal from "../../Utils/getTotal";
+import currencyFormatter from "../../Utils/currency.js"
 
 const styles = (theme) => ({
   textFieldMargin: {
@@ -136,6 +137,7 @@ const NewTransaction = (props) => {
     errorMsg: ""
   });
 
+  console.log(itemsBought)
   useEffect(() => {
     generateID();
   }, []);
@@ -188,6 +190,7 @@ const NewTransaction = (props) => {
       body: inputItem,
       callback: setAddedItem,
     });
+
     setMatchItem({
       itemCode: " ",
       itemBrand: " ",
@@ -202,24 +205,27 @@ const NewTransaction = (props) => {
     })
   };
 
-  const cancelReq = () => {
+  const cancelReq = async () => {
     ajax.DELETE({
-      url: `http://localhost:8000/api/sales/new-transaction/${newTransactionID }`,
+      url: `http://localhost:8000/api/sales/new-transaction/${newTransactionID}`,
       authToken: auth.token,
+      callback: setReturnStatus
     })
   }
 
   const cancelTransaction = () => {
     const cancel = window.confirm("Cancel transaction?");
 
+    if (cancel && itemsBought.length !== 0) {
+      return cancelReq()
+    }
     if (!cancel) {
       return setReturnStatus(false)
     }
 
-    if (cancel && itemsBought.length !== 0) {
-      cancelReq()
-    } 
-    setReturnStatus(true)
+    return setReturnStatus(true)
+
+    
   };
 
   const promptAlert = () => {
@@ -233,11 +239,12 @@ const NewTransaction = (props) => {
   };
 
   const findItem = (e) => {
-    const matchItem = items.find((item) => item.item_code === e.target.value);
+    const matchItem = items.find((item) => item.code === e.target.value);
     if (!matchItem && inputItem.code !== "") {
       setError({status: true, errorMsg: "No item found"})
     } 
     if (matchItem) {
+      setError({status: false, errorMsg: ""})
       setMatchItem(matchItem);
     }
   };
@@ -258,30 +265,30 @@ const NewTransaction = (props) => {
     {
       name: "itemBrand",
       label: "Brand",
-      value: matchItem.item_brand,
+      value: matchItem.brand,
     },
     {
       name: "itemSpecs",
       label: "Specs",
-      value: matchItem.item_specs,
+      value: matchItem.specs,
     },
     {
       name: "itemUnit",
       label: "Unit",
-      value: matchItem.item_unit,
+      value: matchItem.unit,
     },
     {
       name: "itemUnitPrice",
       label: "Unit Price",
       type: "number",
-      value: matchItem.item_unit_price,
+      value: matchItem.unit_price,
       adornment: <InputAdornment>₱&nbsp;</InputAdornment>,
     },
     {
       name: "remaining",
       label: "Remaining Qty",
       type: "number",
-      value: matchItem.item_qty,
+      value: matchItem.qty,
     },
   ];
 
@@ -363,6 +370,7 @@ const NewTransaction = (props) => {
     </div>
   );
 
+
   const transactionTable = (
     <Fragment>
       <TableContainer
@@ -412,19 +420,19 @@ const NewTransaction = (props) => {
           <TableBody>
             {itemsBought.map((item,index) => (
               <TableRow key={index}>
-                <StyledTableCell>{item.item_code}</StyledTableCell>
-                <StyledTableCell>{`${item.item_brand} ${item.item_specs}`}</StyledTableCell>
-                <StyledTableCell>{item.item_unit}</StyledTableCell>
+                <StyledTableCell>{item.code}</StyledTableCell>
+                <StyledTableCell>{`${item.brand} ${item.specs}`}</StyledTableCell>
+                <StyledTableCell>{item.unit}</StyledTableCell>
                 <StyledTableCell>{item.qty}</StyledTableCell>
-                <StyledTableCell>₱ {item.item_unit_price}</StyledTableCell>
-                <StyledTableCell>₱ {item.total_price}</StyledTableCell>
+                <StyledTableCell>{currencyFormatter(item.unit_price)}</StyledTableCell>
+                <StyledTableCell>{currencyFormatter(item.total_price)}</StyledTableCell>
               </TableRow>
             ))}
             <TableRow>
               <StyledTableCell align="right" colSpan={5}>
                 Total
               </StyledTableCell>
-              <StyledTableCell colSpan={5}>₱ {getTotal(itemsBought)}</StyledTableCell>
+              <StyledTableCell colSpan={5}>{currencyFormatter(getTotal(itemsBought))}</StyledTableCell>
             </TableRow>
           </TableBody>
         </Table>

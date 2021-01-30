@@ -25,6 +25,7 @@ import RestockItem from "./restockItem";
 import { useAuth } from "../Subcomponents/auth";
 import { Redirect } from "react-router-dom";
 import clsx from "clsx";
+import currencyFormatter from "../../Utils/currency.js"
 
 const styles = (theme) => ({
   margin: {
@@ -96,11 +97,6 @@ const TableHeader = withStyles(headerStyle)(TableCell);
 const StyledTableCell = withStyles(cellStyle)(TableCell);
 const useStyle = makeStyles(styles);
 
-const currencyFormatter = new Intl.NumberFormat("en-PH", {
-  style: "currency",
-  currency: "PHP",
-});
-
 // locally forbid role on restock and add new item function inside this component.
 const localForbiddenIDs = [2];
 
@@ -118,7 +114,7 @@ const Inventory = (props) => {
   const [openRecords, setOpenRecords] = useState(false);
 
   useEffect(() => {
-    getItems();
+    // getItems();
     const interval = setInterval(() => {
       getItems();
     }, 1000);
@@ -141,7 +137,7 @@ const Inventory = (props) => {
 
   const searchItem = (items) => {
     const results = items.filter((item) => {
-      const itemProp = `${item.item_code} ${item.item_brand} ${item.item_specs}`;
+      const itemProp = `${item.code} ${item.brand} ${item.specs}`;
       return itemProp.toUpperCase().includes(searchWord.toUpperCase())
         ? item
         : "";
@@ -284,14 +280,14 @@ const Inventory = (props) => {
 
   const tableData = (items) =>
     items.map((item) => (
-      <TableRow key={item.item_code} hover style={{backgroundColor: `${item.item_qty <= item.reorder_point ? "#fdecea": ""}`}}>
-        <StyledTableCell>{item.item_code}</StyledTableCell>
-        <StyledTableCell>{`${item.item_brand} ${item.item_specs}`}</StyledTableCell>
-        <StyledTableCell>{item.item_unit}</StyledTableCell>
+      <TableRow key={item.code} hover style={{backgroundColor: `${item.qty <= item.reorder_point ? "#fdecea": ""}`}}>
+        <StyledTableCell>{item.code}</StyledTableCell>
+        <StyledTableCell>{`${item.brand} ${item.specs}`}</StyledTableCell>
+        <StyledTableCell>{item.unit}</StyledTableCell>
         <StyledTableCell>
-          {currencyFormatter.format(Number(item.item_unit_price))}
+          {currencyFormatter(item.unit_price)}
         </StyledTableCell>
-        <StyledTableCell>{item.item_qty}</StyledTableCell>
+        <StyledTableCell>{item.qty}</StyledTableCell>
         <StyledTableCell align="center">{item.reorder_point}</StyledTableCell>
 
         {localForbiddenIDs.includes(auth.user.roleID) ? (
@@ -302,7 +298,7 @@ const Inventory = (props) => {
               variant="contained"
               disableElevation
               className={classes.restockBtn}
-              onClick={() => openRestockModal(item.item_code)}
+              onClick={() => openRestockModal(item.code)}
             >
               Restock
             </Button>

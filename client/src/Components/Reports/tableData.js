@@ -10,6 +10,7 @@ import {
   Paper
 } from "@material-ui/core";
 import theme from "../../Theme/index";
+import currencyFormatter from "../../Utils/currency.js"
 
 const styles = (theme) => ({
   margin: {
@@ -72,10 +73,10 @@ const TableData = (props) => {
                   {`${item.brand} ${item.specs}`}
                 </StyledTableCell>
                 <StyledTableCell>{item.unit}</StyledTableCell>
-                <StyledTableCell>₱ {item.unit_price}</StyledTableCell>
+                <StyledTableCell>{currencyFormatter(item.unit_price)}</StyledTableCell>
                 <StyledTableCell>{item.sold}</StyledTableCell>
                 <StyledTableCell>
-                  ₱ {Number(item.sold) * Number(item.unit_price)}
+                  {currencyFormatter(Number(item.sold) * Number(item.unit_price))}
                 </StyledTableCell>
               </TableRow>
             ))}
