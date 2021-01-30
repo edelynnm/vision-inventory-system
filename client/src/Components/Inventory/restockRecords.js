@@ -133,12 +133,12 @@ const RestockRecords = () => {
                 return(
                 <TableRow key={index} hover>
                   <StyledTableCell>{date}</StyledTableCell>
-                  <StyledTableCell>{record.item_code}</StyledTableCell>
+                  <StyledTableCell>{record.code}</StyledTableCell>
                   <StyledTableCell>
-                    {`${record.item_brand} ${record.item_specs}`}
+                    {`${record.brand} ${record.specs}`}
                   </StyledTableCell>
                   <StyledTableCell>{record.additional_qty}</StyledTableCell>
-                  <StyledTableCell>{record.item_unit}</StyledTableCell>
+                  <StyledTableCell>{record.unit}</StyledTableCell>
                   <StyledTableCell>
                     {`${record.fname} ${record.lname}`}
                   </StyledTableCell>

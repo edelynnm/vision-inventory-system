@@ -128,11 +128,11 @@ const ItemTransactions = (props) => {
           <TableBody>
             {items.map((item,index) => (
               <TableRow key={index}>
-                <StyledTableCell>{item.item_code}</StyledTableCell>
-                <StyledTableCell>{`${item.item_brand} ${item.item_specs}`}</StyledTableCell>
-                <StyledTableCell>{item.item_unit}</StyledTableCell>
+                <StyledTableCell>{item.code}</StyledTableCell>
+                <StyledTableCell>{`${item.brand} ${item.specs}`}</StyledTableCell>
+                <StyledTableCell>{item.unit}</StyledTableCell>
                 <StyledTableCell>{item.qty}</StyledTableCell>
-                <StyledTableCell>₱ {item.item_unit_price}</StyledTableCell>
+                <StyledTableCell>₱ {item.unit_price}</StyledTableCell>
                 <StyledTableCell>₱ {item.total_price}</StyledTableCell>
               </TableRow>
             ))}

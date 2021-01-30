@@ -131,7 +131,7 @@ const EmployeeRecords = () => {
                   <StyledTableCell>{emp.fname}</StyledTableCell>
                   <StyledTableCell>{emp.lname}</StyledTableCell>
                   <StyledTableCell>{emp.email}</StyledTableCell>
-                  <StyledTableCell>{emp.role_title}</StyledTableCell>
+                  <StyledTableCell>{emp.title}</StyledTableCell>
                   <StyledTableCell>{emp.is_verified ? "Registered" : "Pending" }</StyledTableCell>
                 </TableRow>
               ))}

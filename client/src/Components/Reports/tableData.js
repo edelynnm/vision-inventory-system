@@ -69,13 +69,13 @@ const TableData = (props) => {
               <TableRow hover>
                 <StyledTableCell>{item.item_code}</StyledTableCell>
                 <StyledTableCell>
-                  {`${item.item_brand} ${item.item_specs}`}
+                  {`${item.brand} ${item.specs}`}
                 </StyledTableCell>
-                <StyledTableCell>{item.item_unit}</StyledTableCell>
-                <StyledTableCell>₱ {item.item_unit_price}</StyledTableCell>
+                <StyledTableCell>{item.unit}</StyledTableCell>
+                <StyledTableCell>₱ {item.unit_price}</StyledTableCell>
                 <StyledTableCell>{item.sold}</StyledTableCell>
                 <StyledTableCell>
-                  ₱ {Number(item.sold) * Number(item.item_unit_price)}
+                  ₱ {Number(item.sold) * Number(item.unit_price)}
                 </StyledTableCell>
               </TableRow>
             ))}

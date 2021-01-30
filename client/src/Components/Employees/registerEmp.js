@@ -241,8 +241,8 @@ const RegisterEmployees = (props) => {
               onChange={handleRoleChange}
             >
               {roles.map((role) => (
-                <MenuItem key={role.role_title} value={role.role_id}>
-                  {role.role_title}
+                <MenuItem key={role.title} value={role.id}>
+                  {role.title}
                 </MenuItem>
               ))}
             </TextField>

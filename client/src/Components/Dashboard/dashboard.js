@@ -29,7 +29,7 @@ const Dashboard = () => {
 
   const getRestockItems = (items) => {
     const result = items.filter((item) =>
-      item.item_qty <= item.reorder_point ? item : ""
+      item.qty <= item.reorder_point ? item : ""
     );
     setRestockItems(result);
   };
@@ -61,13 +61,13 @@ const Dashboard = () => {
               <div>
                 <Typography>ITEM {index + 1}</Typography>
                 <Typography style={{ marginLeft: 40 }}>
-                  CODE:<b> {item.item_code}</b>
+                  CODE:<b> {item.code}</b>
                 </Typography>
                 <Typography style={{ marginLeft: 40 }}>
-                  DESC: <b>{`${item.item_brand} ${item.item_specs}`}</b>
+                  DESC: <b>{`${item.brand} ${item.specs}`}</b>
                 </Typography>
                 <Typography style={{ marginLeft: 40 }}>
-                  QTY LEFT: <b>{item.item_qty}</b>
+                  QTY LEFT: <b>{item.qty}</b>
                 </Typography>
                 <br />
               </div>
