@@ -19,10 +19,14 @@ import {
 import theme from "../../Theme/index";
 import ajax from "../../Utils/facade";
 import AuthTemplate from "../Subcomponents/uiTemplates/authTemplate";
+import helloImg from "../../Assets/images/hello.png";
 
 const styles = (theme) => ({
   rightScreenStyle: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundImage: `url(${helloImg})`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundSize: "contain",
     zIndex: 0,
   },
   backButton: {
