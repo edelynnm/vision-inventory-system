@@ -137,7 +137,7 @@ router
   .get("/transaction-records", async (req, res) => {
     try {
       const { rows } = await pgClient.query(`
-        SELECT T.id, DATE(T.date_time), T.total, U.fname, U.lname
+        SELECT T.id, T.date_time as date, T.total, U.fname, U.lname
         FROM business_${req.user.business_id}.transactions AS T
         INNER JOIN users AS U ON U.id = T.user_id
         ORDER BY date DESC;`);
