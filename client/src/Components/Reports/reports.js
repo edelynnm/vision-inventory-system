@@ -32,7 +32,7 @@ const Reports = () => {
   const getTable = (items) => {
     let data = []
     for (const [key, value] of Object.entries(items)) {
-      data.push(<TableData date={key} value={value} />)
+      data.push(<TableData date={key} value={value} key={key} />)
     }
     return data;
   }

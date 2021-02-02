@@ -67,7 +67,7 @@ const TableData = (props) => {
           </TableHead>
           <TableBody>
             {props.value.map((item) => (
-              <TableRow hover>
+              <TableRow hover key={item.item_code}>
                 <StyledTableCell>{item.item_code}</StyledTableCell>
                 <StyledTableCell>
                   {`${item.brand} ${item.specs}`}

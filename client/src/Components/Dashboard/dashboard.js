@@ -58,7 +58,7 @@ const Dashboard = () => {
               RESTOCK:
             </Typography>
             {restockItems.map((item, index) => (
-              <div>
+              <div key={index}>
                 <Typography>ITEM {index + 1}</Typography>
                 <Typography style={{ marginLeft: 40 }}>
                   CODE:<b> {item.code}</b>
